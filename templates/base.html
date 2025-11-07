@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='ImpactEarth.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <header>
+        <table COLS=2 WIDTH=100% >
+        <tr>
+        <td><img class="banner_image" SRC="static/imperial.png" BORDER=5></td>
+        <td><img class="banner_image" align=right SRC="static/purduemark.png" BORDER=5></td>
+        </tr>
+        </table>
+<h1 align=center><a href="http://impact.ese.ic.ac.uk">Impact: Earth!</a></h1>
+<h3 align=center><a href="http://www.imperial.ac.uk/people/g.collins">Gareth Collins</a>, <a href="https://meteoritical.org/news/h-jay-melosh-1947-2020">H. Jay Melosh</a> and Robert Marcus</h3>
+<br>
+<br>
+<br>
+    </header>
+    {% block content %}{% endblock %}
+    <footer>
+        <p>&copy; 2023 Impact Earth</p>
+    </footer>    
+</body>
+</html>

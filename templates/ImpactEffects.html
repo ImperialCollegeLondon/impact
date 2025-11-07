@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Introduction{% endblock %}
+{% block content %}
+    <h2 align=center>Damage Map Version</h2>
+    
+    <p>Welcome to the Earth Impact Effects Program: an easy-to-use, interactive web site for estimating the regional environmental consequences of an impact on Earth.  This program will estimate the ejecta distribution, ground shaking, atmospheric blast wave, and thermal effects of an impact as well as the size of the crater produced. </p>
+    
+    <p>Please enter a location on Earth to impact, then enter values in the boxes below to describe your impact of choice. Select the impact effect you are interested in and rhen click "Display Impact Effects" to see the damage zone!</p>
+
+    <!! Script to action when form is submitted.>
+    <form action ="map">
+
+      <!! Enter the lat and long of the impact.>
+      <h2 align=left>Location of Impact</h2>
+      
+      <blockquote>Latitude: <input type="text" name="latitude" size=10> and Longitude: <input type="text" name="longitude" size=10> or
+	<select name="LocationSelect">
+	  <option value="0">Select a location
+    {% for location in locations %}
+        <option>{{ location }}</option>
+    {% endfor %}
+	</select> or 
+	<select name="CraterSelect">
+	  <option value="0">Select a crater
+    {% for crater in craters %}
+        <option>{{ crater }}</option>
+    {% endfor %}
+	</select>
+      </blockquote>
+      
+      <br>
+      
+      <h2 align=left>Impact Parameters</h2>
+      <a target="_blank" href="http://amcg.ese.ic.ac.uk/~gareth/ImpactEffects/examples.html">Impact Examples</a>
+      
+      <h3 align=left>Projectile Parameters</h3>
+      <blockquote>
+	Projectile Diameter
+	<input type="text" name="diam" size=10>
+	<select name="diameterUnits">
+	  
+	  <option value="1">m
+	  <option value="2">km
+	  <option value="3">ft
+	  <option value="4">miles
+	</select>
+	<br>
+	<p>Projectile Density (in kg/m<sup>3</sup>)
+	  <input type="text" name="pdens" size=10> or
+	  <select name="pdens_select">
+	    <option value="0">Select from a list
+	    <option value="1000">1000 kg/m^3 for ice
+	    <option value="1500">1500 kg/m^3 for porous rock
+	    <option value="3000">3000 kg/m^3 for dense rock
+	    <option value="8000">8000 kg/m^3 for iron
+	  </select>
+	  
+      </blockquote>
+      
+      <h3 align=left>Impact Parameters</h3>
+      <blockquote>
+	Impact Velocity
+	<input type="text" name="vel" size=10>
+	<select name="velocityUnits">
+	  
+	  <option value="1">km/s
+	  <option value="2">miles/s
+	</select>
+	
+	<p>This is the velocity of the projectile before it enters the atmosphere.  The minimum impact velocity on Earth is 11 km/s.  Typical impact velocities are 17 km/s for asteroids and 51 km/s for comets.  The maximum Earth impact velocity for objects orbiting the sun is 72 km/s.
+	  
+	<p>Impact Angle (in degrees)
+	  <input type="text" name="theta" size=10>
+	  
+	<p>The impact angle is measured from a plane tangent to the impact surface.  This angle is 90 degrees for a vertical impact.  The most	probable angle of impact is 45 degrees.
+      </blockquote>
+      
+      <h3 align=left>Target Parameters</h3>
+      <blockquote>
+	Target Type
+	<br>
+	<blockquote>
+	  <input type="radio" name="tdens" value ="1000">Water
+	  of depth:  <input type="text" name="wdepth" size=10>
+	  <select name="wdepthUnits">
+	    <option value="1">meters
+	    <option value="2">feet
+	  </select>
+	  <br>
+	  <input type="radio" name="tdens" value ="2500">Sedimentary Rock
+	  <br>
+	  <input type="radio" name="tdens" value ="2750">Crystalline Rock
+	  <br>
+      
+	</blockquote>
+      </blockquote>
+          <p>
+      <br>
+      <br>
+      <br>
+            <center>
+	<input type="submit" value="Display Impact Effects">
+	<input type="reset" value="Reset Form">
+      </center>
+    </form>
+
+      <a target="_blank" href="http://www.lpl.arizona.edu/~marcus/effects.pdf">Tell me more...</a>
+    <p>Click here for a pdf document that details the observations, assumptions, and equations upon which this program is based.  It describes our approach to quantifying the important impact processes that might affect the people, buildings, and landscape in the vicinity of an impact event and discusses the uncertainty in our predictions.  The processes included are:  atmospheric entry, impact crater formation, fireball expansion and thermal radiation, ejecta deposition, seismic shaking, and the propagation of the atmospheric blast wave.</p>
+    
+    
+    
+    <hr>
+    <br>
+    
+{% endblock %}
