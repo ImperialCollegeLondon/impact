@@ -1,3 +1,16 @@
+import math
+
+EARTH_RADIUS_KM = 6371.0
+EARTH_ANGULAR_MOMENTUM = 5.86 * 10**33;		# (kg m^3)/sec
+EARTH_MASS = 5.97 * 10**24             # Mass of Earth in kg
+EARTH_VOLUME = 1.1 * 10**12		# volume of earth in km^3
+EARTH_LINEAR_MOMENTUM = 1.794 * 10**32  # linear momentum of earth in (kg * m) / sec
+RHO_SURFACE = 1			# surface density of atmosphere kg/m^3
+PANCAKE_FACTOR = 7.0
+G = 9.8            		# acceleration due to gravity
+DRAG_COEFFICIENT = 2	# drag coefficient
+MELT_COEFFICIENT = 8.9 * 10**-21		# coefficient for melt volume calc
+SCALE_HEIGHT = 8000			# scale height of atmosphere in m
 
 def get_location(params):
     # Extract parameters
@@ -38,3 +51,319 @@ def get_location(params):
             latitude, longitude = craters_dict[earth_crater]
 
     return latitude, longitude
+
+
+def get_impactor_diameter(params):
+    # Get diameter and units
+    pdiameter = params.get("diam", "")
+    punits = params.get("diameterUnits", None)
+    if pdiameter == "":
+        pdiameter = params.get("diameterSelect", "")
+        punits = 1
+
+    try:
+        pdiameter = float(pdiameter)
+    except (TypeError, ValueError):
+        pdiameter = 0
+
+    if punits == 2:
+        pdiameter *= 1000  # kilometers to meters
+    elif punits == 3:
+        pdiameter *= 0.3048  # feet to meters
+    elif punits == 4:
+        pdiameter *= 1609.34  # miles to meters
+
+    return pdiameter
+
+
+def calculate_distance_km(distance, distance_units):
+    try:
+        distance_value = float(distance)
+    except (TypeError, ValueError):
+        distance_value = 0.0
+
+    if distance_units == 'miles':
+        distance_km = distance_value * 1.60934
+    else:
+        distance_km = distance_value
+
+    return distance_km
+
+
+def calculate_velocity_km(vel, velocity_units):
+    try:
+        velocity_value = float(vel)
+    except (TypeError, ValueError):
+        velocity_value = 0.0
+
+    if velocity_units == 'miles/s':
+        velocity_km = velocity_value * 1.60934
+    else:
+        velocity_km = velocity_value
+    return velocity_km
+
+
+
+def airblast_radius_crater(
+    energy_ktons: float,
+    rkt: float,
+    altitudeBurst: float,
+    qCrater: bool,
+    CraterRadiusFinal: float
+) -> tuple[float, bool]:
+    """
+    Calculate airblast radius, considering crater formation.
+    Returns (radius, qAirblast)
+    """
+    hkt = altitudeBurst / (energy_ktons ** (1.0 / 3.0))  # scaled burst altitude (m)
+    radius = rkt * (energy_ktons ** (1.0 / 3.0)) / EARTH_RADIUS_KM  # radius of given damage effect
+
+    qAirblast = False
+
+    if qCrater:
+        if radius < CraterRadiusFinal:
+            radius = 0
+        else:
+            qAirblast = True
+            if radius > 0.5 * math.pi:
+                radius = CraterRadiusFinal
+    else:
+        # If scaled burst altitude is less than blast effect radius, compute based on slant range
+        if hkt < rkt * 1000.0:
+            qAirblast = True
+            radius = math.sqrt(rkt ** 2 - (hkt / 1000.0) ** 2) * (energy_ktons ** (1.0 / 3.0)) / EARTH_RADIUS_KM
+        else:
+            radius = 0
+
+    return radius, qAirblast
+
+
+def find_airblast(energy_ktons, altitudeBurst, qCrater, CraterRadiusFinal):
+    """
+    Calculate airblast radii based on energy and crater type.
+
+    Args:
+        energy_ktons (float): Energy in kilotons.
+        qCrater (bool): True if surface burst, else other.
+    """
+    if qCrater:
+        values = [0.126, 0.155, 0.660, 1.651]  # kPa values for different damage levels
+    else:
+        values = [0.660, 1.651, 4.100]  # kPa values for different damage levels
+
+    return [airblast_radius_crater(energy_ktons, rkt, altitudeBurst, qCrater, CraterRadiusFinal) for rkt in values]
+
+
+def calc_energy(pdiameter, pdensity, vInput, velocity, theta, depth, distance):
+    pi = math.pi
+    R_earth=EARTH_RADIUS_KM * 1000  # in meters
+    altitudeBurst=0
+
+    # mass = density * volume, volume calculated assuming the projectile to be approximately spherical
+    mass = ((pi * pdiameter ** 3) / 6) * pdensity
+    energy0 = 0.5 * mass * (vInput * 1000) ** 2
+    energy0_megatons = energy0 / (4.186 * 10 ** 15)  # joules to megatons conversion
+
+    # Compute the recurrence interval for this energy impact
+    if mass < 3:
+        rec_time = 10 ** (-4.568) * mass ** 0.480
+    elif mass < 1.7E10:
+        rec_time = 10 ** (-4.739) * mass ** 0.926
+    elif mass < 3.3E12:
+        rec_time = 10 ** (0.922) * mass ** 0.373
+    elif mass < 8.4E14:
+        rec_time = 10 ** (-0.086) * mass ** 0.454
+    else:
+        rec_time = 10 ** (-3.352) * mass ** 0.672
+
+    # Use previous estimate at large sizes
+    rec_time = max(rec_time, 110 * (energy0_megatons) ** 0.77)
+
+    # If the impactor is less than a kilogram, the impactor burns up in the atmosphere
+    if mass < 1:
+        print_noimpact()
+        return
+
+    # Compute linear and angular momentum as a fraction of Earth's
+    linmom = mass * (velocity * 1000)
+    angmom = mass * (velocity * 1000) * math.cos(theta * pi / 180) * R_earth
+
+    if vInput > (0.25 * 3 * 10 ** 5):  # relativistic effects
+        beta = 1 / math.sqrt(1 - vInput ** 2 / (9 * 10 ** 10))
+        energy0 *= beta
+        linmom *= beta
+        angmom *= beta
+
+    lratio = angmom / EARTH_ANGULAR_MOMENTUM
+    pratio = linmom / EARTH_LINEAR_MOMENTUM
+
+    trot_change = (1.25 / pi) * (mass / EARTH_MASS) * math.cos(theta * pi / 180) / R_earth * velocity * (24. * 60. * 60.) ** 2
+
+    # Compute energy of airburst, or energy after deceleration by atmosphere
+    energy_atmosphere = 0.5 * mass * ((vInput * 1000) ** 2 - (velocity * 1000) ** 2)
+    if altitudeBurst > 0:
+        # Blast energy is airburst energy (kTons)
+        energy_blast = energy_atmosphere / (4.186 * 10 ** 12)
+        energy_surface = energy_atmosphere
+    else:
+        altitudeBurst = 0
+        energy_surface = 0.5 * mass * (velocity * 1000) ** 2
+        # Blast energy is larger of airburst and impact energy (kTons)
+        if energy_atmosphere > energy_surface:
+            energy_blast = energy_atmosphere / (4.186 * 10 ** 12)
+        else:
+            energy_blast = energy_surface / (4.186 * 10 ** 12)
+    energy_megatons = energy_surface / (4.186 * 10 ** 15)  # joules to megatons conversion
+
+    # Account for the decelerating effect of the water layer
+    mwater = (pi * pdiameter ** 2 / 4) * (depth / math.sin(theta * pi / 180)) * 1000
+    vseafloor = velocity * math.exp(-(3 * 1000 * 0.877 * depth) / (2 * pdensity * pdiameter * math.sin(theta * pi / 180)))
+    energy_seafloor = 0.5 * mass * (vseafloor * 1000) ** 2
+
+    # Compute the epicentral angle for use in several subsequent calculations.
+    delta = (180 / pi) * (distance / R_earth)
+
+    # Return results as a dictionary
+    return {
+        'mass': mass,
+        'energy0': energy0,
+        'energy0_megatons': energy0_megatons,
+        'rec_time': rec_time,
+        'linmom': linmom,
+        'angmom': angmom,
+        'lratio': lratio,
+        'pratio': pratio,
+        'trot_change': trot_change,
+        'energy_atmosphere': energy_atmosphere,
+        'energy_blast': energy_blast,
+        'energy_surface': energy_surface,
+        'energy_megatons': energy_megatons,
+        'mwater': mwater,
+        'vseafloor': vseafloor,
+        'energy_seafloor': energy_seafloor,
+        'delta': delta
+    }
+
+
+def find_crater(
+    theta, depth, mass, target_density, pdiameter, velocity, vseafloor,
+    dispersion, energy_seafloor
+):
+    # pi scaling diameter constants
+    Cd = 1.6
+    beta = 0.22
+
+    anglefac = math.sin(theta * math.pi / 180) ** (1 / 3)
+
+    if depth != 0:
+        # calculate crater in water using Cd = 1.88 and beta = 0.22
+        wdiameter = 1.88 * (mass / target_density) ** (1 / 3) * \
+            ((1.61 * G * pdiameter) / (velocity * 1000) ** 2) ** (-0.22)
+        wdiameter *= anglefac
+        target_density = 2700  # change target density for seafloor crater calculation
+
+    # vseafloor == surface velocity if there is no water
+    Dtr = Cd * (mass / target_density) ** (1 / 3) * \
+        ((1.61 * G * pdiameter) / (vseafloor * 1000) ** 2) ** (-beta)
+    Dtr *= anglefac
+
+    if dispersion >= Dtr:
+        # if crater field is formed, compute crater dimensions assuming
+        # impact of largest fragment (with diameter = 1/2 initial diameter)
+        Dtr /= 2
+
+    depthtr = Dtr / 2.828
+
+    if Dtr * 1.25 >= 3200:
+        # complex crater will be formed, use equation from McKinnon and Schenk (1985)
+        cdiameter = (1.17 * Dtr ** 1.13) / (3200 ** 0.13)
+        depthfr = 37 * cdiameter ** 0.301
+    else:
+        # simple crater will be formed
+        cdiameter = 1.25 * Dtr  # Diameter of final crater in m
+        vbreccia = 0.032 * cdiameter ** 3  # Breccia lens volume in m^3
+        rimHeightf = 0.07 * Dtr ** 4 / cdiameter ** 3  # Rim height of final crater in m
+        brecciaThickness = 2.8 * vbreccia * ((depthtr + rimHeightf) / (depthtr * cdiameter ** 2))
+        depthfr = depthtr + rimHeightf - brecciaThickness  # Final crater depth (in m)
+
+    vCrater = (math.pi / 24) * (Dtr / 1000) ** 3
+    vratio = vCrater / EARTH_VOLUME
+
+    mratio = None
+    mcratio = None
+    vMelt = None
+
+    if velocity >= 12:
+        vMelt = MELT_COEFFICIENT * energy_seafloor * math.sin(theta * math.pi / 180)
+        if vMelt > EARTH_VOLUME:
+            vMelt = EARTH_VOLUME
+        mratio = vMelt / EARTH_VOLUME
+        mcratio = vMelt / vCrater
+
+    CraterRadiusFinal = 0.5E-3 * cdiameter / EARTH_RADIUS_KM
+    CraterRadiusTransient = 0.5E-3 * Dtr / EARTH_RADIUS_KM
+
+    return CraterRadiusFinal, CraterRadiusTransient    
+
+
+def atmospheric_entry(pdensity, pdiameter, theta, vInput):
+    # Yield strength of projectile in Pa
+    yield_strength = 10 ** (2.107 + 0.0624 * math.sqrt(pdensity))
+
+    # Velocity decrement factor
+    av = 3 * RHO_SURFACE * DRAG_COEFFICIENT * SCALE_HEIGHT / (2 * pdensity * pdiameter * math.sin(theta * math.pi / 180))
+
+    # Strength ratio
+    rStrength = yield_strength / (RHO_SURFACE * (vInput * 1000) ** 2)
+
+    iFactor = 5.437 * av * rStrength
+
+    velocity = None
+    altitudeBurst = None
+    dispersion = None
+
+    if iFactor >= 1:  # projectile lands intact
+        altitudeBurst = 0
+        vTerminal = math.sqrt(2 * pdensity * pdiameter * G / (3 * RHO_SURFACE * DRAG_COEFFICIENT))
+        vSurface = vInput * 1000 * math.exp(-av)
+
+        if vTerminal > vSurface:
+            velocity = vTerminal
+        else:
+            velocity = vSurface
+
+    else:  # projectile does not land intact
+        altitude1 = -SCALE_HEIGHT * math.log(rStrength)
+        omega = 1.308 - 0.314 * iFactor - 1.303 * math.sqrt(1 - iFactor)
+        altitudeBU = altitude1 - omega * SCALE_HEIGHT
+        vBU = vInput * 1000 * math.exp(-av * math.exp(-altitudeBU / SCALE_HEIGHT))
+
+        vFac = 1.5 * math.sqrt(DRAG_COEFFICIENT * RHO_SURFACE / (2 * pdensity)) * math.exp(-altitudeBU / (2 * SCALE_HEIGHT))
+        lDisper = pdiameter * math.sin(theta * math.pi / 180) * math.sqrt(pdensity / (2 * DRAG_COEFFICIENT * RHO_SURFACE)) * math.exp(altitudeBU / (2 * SCALE_HEIGHT))
+
+        alpha2 = math.sqrt(PANCAKE_FACTOR ** 2 - 1)
+        altitudePen = 2 * SCALE_HEIGHT * math.log(1 + alpha2 * lDisper / (2 * SCALE_HEIGHT))
+        altitudeBurst = altitudeBU - altitudePen
+
+        if altitudeBurst > 0:  # impactor bursts in atmosphere
+            expfac = (1 / 24) * alpha2 * (24 + 8 * alpha2 ** 2 + 6 * alpha2 * lDisper / SCALE_HEIGHT + 3 * alpha2 ** 3 * lDisper / SCALE_HEIGHT)
+            velocity = vBU * math.exp(-expfac * vFac)
+        else:
+            altitudeScale = SCALE_HEIGHT / lDisper
+            integral = (altitudeScale ** 3 / 3) * (
+                3 * (4 + 1 / altitudeScale ** 2) * math.exp(altitudeBU / SCALE_HEIGHT)
+                + 6 * math.exp(2 * altitudeBU / SCALE_HEIGHT)
+                - 16 * math.exp(3 * altitudeBU / (2 * SCALE_HEIGHT))
+                - 3 / altitudeScale ** 2
+                - 2
+            )
+            velocity = vBU * math.exp(-vFac * integral)
+            dispersion = pdiameter * math.sqrt(1 + 4 * altitudeScale ** 2 * (math.exp(altitudeBU / (2 * SCALE_HEIGHT)) - 1) ** 2)
+
+    velocity /= 1000  # convert to km/s
+
+    return {
+        'velocity': velocity,
+        'altitudeBurst': altitudeBurst,
+        'dispersion': dispersion
+    }

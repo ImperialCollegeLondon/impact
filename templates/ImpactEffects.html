@@ -12,6 +12,13 @@
 
       <!! Enter the lat and long of the impact.>
       <h2 align=left>Location of Impact</h2>
+
+	  <p>Distance from Impact
+	<input type="text" name="distance" size=10>
+	<select name="distanceUnits">
+		<option>km</option>
+		<option>miles</option>
+	</select>
       
       <blockquote>Latitude: <input type="text" name="latitude" size=10> and Longitude: <input type="text" name="longitude" size=10> or
 	<select name="LocationSelect">
@@ -38,21 +45,25 @@
 	Projectile Diameter
 	<input type="text" name="diam" size=10>
 	<select name="diameterUnits">
-	  
-	  <option value="1">m
-	  <option value="2">km
-	  <option value="3">ft
-	  <option value="4">miles
+	  <option>m
+	  <option>km
+	  <option>ft
+	  <option>miles
 	</select>
+	<select name="diameterSelect">
+		<option value="">Select a template</option>
+		{% for value, label in diameter_options %}
+			<option value="{{ value }}">{{ label }}</option>
+		{% endfor %}
+	</select>
+
 	<br>
 	<p>Projectile Density (in kg/m<sup>3</sup>)
 	  <input type="text" name="pdens" size=10> or
 	  <select name="pdens_select">
-	    <option value="0">Select from a list
-	    <option value="1000">1000 kg/m^3 for ice
-	    <option value="1500">1500 kg/m^3 for porous rock
-	    <option value="3000">3000 kg/m^3 for dense rock
-	    <option value="8000">8000 kg/m^3 for iron
+        {% for value, label in pdens_options %}
+            <option value="{{ value }}">{{ label }}
+        {% endfor %}
 	  </select>
 	  
       </blockquote>
@@ -60,7 +71,7 @@
       <h3 align=left>Impact Parameters</h3>
       <blockquote>
 	Impact Velocity
-	<input type="text" name="vel" size=10>
+	<input type="text" name="vel" size=10>  <!-- Input for velocity (max 72 km/s)-->
 	<select name="velocityUnits">
 	  
 	  <option value="1">km/s
