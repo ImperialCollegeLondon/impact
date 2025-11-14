@@ -1,0 +1,56 @@
+    <dl>
+        <dt>
+            <h2>Major Global Changes:</h2>
+
+            {% if globalstate == "destroyed" %}
+                <dd>The Earth is completely disrupted by the impact and its debris forms a new asteroid belt orbiting the sun between Venus and Mars.
+                </dd>
+                {% set skip = true %}
+            {% elif globalstate == "disturbed" %}
+                <dd>The Earth is strongly disturbed by the impact, but loses little mass.
+                </dd>
+            {% else %}
+                <dd>The Earth is not strongly disturbed by the impact and loses negligible mass.</dd>
+            {% endif %}
+    </dt>
+	
+    {% if mratio >= 0.01 %} {
+      <dd><b>{{ (mratio * 100) | round(2) }}</b> percent of the Earth is melted by the impact.</dd>
+    {% endif %}
+    
+    {% if lratio >= 0.001 %}
+        <dd>
+            Depending on the direction and location of the collision,
+            {% if lratio < 0.01 %}
+                the impact may make a very small change in the tilt of Earth's axis (&lt; half a degree).
+            {% elif lratio < 0.1 %}
+                the impact may make a noticeable change in the tilt of Earth's axis (&lt; 5 degrees).
+            {% elif lratio < 1.0 %}
+                the impact may make a significant change in the tilt of Earth's axis.
+            {% else %}
+                the impact may totally change the Earth's rotation period and the tilt of its axis.
+            {% endif %}
+        </dd>
+    {% else %}
+        <dd>The impact does not make a noticeable change in the tilt of Earth's axis (&lt; 5 hundredths of a degree).</dd>
+    {% endif %}
+
+    {% if (trot_change > 1E-3) %}
+      <dd>Depending on the direction and location of impact, the collision may cause a change in the length of 
+        the day of up to {{ trot_change | duration}};</dd>
+    {% endif %}
+	
+    if ($pratio >= 0.001) {
+      if ($pratio < .01) {
+	print "<dd>The impact shifts the Earth's orbit noticeably.";
+      } elsif ($pratio < 0.1) {
+	print "<dd>The imapct shifts the Earth's orbit substantially.";
+      } else {
+	print "<dd>The impact shifts the Earth's orbit totally.";
+      }
+    } else {
+      print "<dd>The impact does not shift the Earth's orbit noticeably.";
+    }
+	
+	
+    print "</dl>\n";

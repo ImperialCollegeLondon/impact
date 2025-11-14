@@ -1,0 +1,31 @@
+<dl>
+    {% if ifactor >= 1.0 %}
+        <dd>The projectile lands intact, with a velocity <b>12.3 km/s = 7.6 miles/s</b>.</dd>
+        <dd>The energy lost in the atmosphere is <b>2.50 x 10<sup>15</sup> Joules = 1.20 x 10<sup>3</sup> MegaTons</b>.</dd>
+    {% else %}
+        <dd>The projectile begins to breakup at an altitude of <b>{{ altitudeBU|round(3) }} meters = {{ (altitudeBU * 3.28084) | int }} ft</b></dd>
+        {% if altitudeBurst > 0 %}
+            <dd>The projectile bursts into a cloud of fragments at an altitude of <b>{{ altitudeBurst|round(3) }} meters = {{ (altitudeBurst * 3.28084)| int }} ft</b></dd>
+            <dd>The residual velocity of the projectile fragments after the burst is <b> km/s = 5.1 miles/s</b></dd>
+            <dd>The energy of the airburst is <b>1.75 x 10<sup>14</sup> Joules = 0.85 x 10<sup>2</sup> MegaTons</b>.</dd>
+            {% if density < 5000 %}
+                <dd>No crater is formed, although large fragments may strike the surface.</dd>
+            {% else %}
+                <dd>Large fragments strike the surface and may create a crater strewn field. 
+                    A more careful treatment of atmospheric entry is required to accurately estimate 
+                    the size-frequency distribution of meteoroid fragments and predict the number and 
+                    size of craters formed.</dd>
+            {% endif %}
+        {% else %}
+            <dd>The projectile reaches the ground in a broken condition. The mass of projectile strikes the surface at velocity <b>6.5 km/s = 4.0 miles/s</b></dd>
+            <dd>The energy lost in the atmosphere is <b>1.20 x 10<sup>13</sup> Joules = 0.60 x 10<sup>1</sup> MegaTons</b>.</dd>
+            {% if megaton_power > 0 %}
+                <dd>The impact energy is <b>2.00 x 10<sup>13</sup> Joules = 1.00 x 10<sup>1</sup> MegaTons</b>.</dd>
+            {% else %}
+                <dd>The impact energy is <b>5.00 x 10<sup>12</sup> Joules = 0.25 x 10<sup>1</sup> MegaTons</b>.</dd>
+            {% endif %}
+            <dd>The larger of these two energies is used to calculate the airblast damage.</dd>
+            <dd>The broken projectile fragments strike the ground in an ellipse of dimension <b>3.2 km by 1.5 km</b></dd>
+        {% endif %}
+    {% endif %} 
+</dl>

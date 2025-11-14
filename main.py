@@ -69,7 +69,7 @@ def map_page():
 
     vkm = impact.calculate_velocity_km(request.args.get('vel', ''), request.args.get('velocityUnits', 'km/s'))
     theta = float(request.args.get('theta', '45'))
-    depth_meters=float(request.args.get('wdepth', '0')) if request.args.get('wdepth', '') != '' else 0.0
+    depth_meters=impact.get_depth_meters(request.args)
 
     # Calculate the effects of atmospheric entry
     atmospheric_entry_effects = impact.atmospheric_entry(density, diameter_meters, theta, vkm)
@@ -84,7 +84,7 @@ def map_page():
         distance=dist
     )
 
-    crater_radius, crater_radius_transient = impact.find_crater(theta=theta, 
+    crater_results = impact.find_crater(theta=theta, 
                         depth=depth_meters,
                         mass=energy_results['mass'], 
                         target_density=float(request.args.get('tdens', '2500')),
@@ -96,14 +96,38 @@ def map_page():
                         )
     
     qCrater = atmospheric_entry_effects['altitudeBurst'] <= 0
-    airblast_radii = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, crater_radius)
+    airblast_radii = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, crater_results['CraterRadiusFinal'])
     return render_template('map.html', location=impact.get_location(request.args), 
                            density=density, distance_km=dist, 
                            velocity_km_per_second=vkm, 
                            diameter_meters=diameter_meters,
+                           trot_change=energy_results['trot_change'],
                            impact_angle=theta,
-                           depth=request.args.get('wdepth', '0'),
+                           depth=depth_meters,
+                           ifactor=atmospheric_entry_effects['ifactor'],
+                           altitudeBU =atmospheric_entry_effects['altitudeBU'],
+                           altitudeBurst=atmospheric_entry_effects['altitudeBurst'],
+                           mratio=crater_results['mratio'],
+                            lratio=energy_results['lratio'],
+                           energy_joules=energy_results['energy0'],
+                           rec_time_years=energy_results['rec_time'],
                            target_density=request.args.get('tdens', '2500'))
 
+def format_duration(seconds):
+    seconds = int(seconds)
+    if seconds < 60:
+        return f"{seconds} seconds"
+    elif seconds < 3600:
+        minutes = seconds // 60
+        seconds = seconds % 60
+        return f"{minutes} minutes, {seconds} seconds"
+    else:
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+        return f"{hours} hours, {minutes} minutes, {seconds} seconds"
+
+
 if __name__ == '__main__':
+    app.jinja_env.filters['duration'] = format_duration
     app.run(debug=True)

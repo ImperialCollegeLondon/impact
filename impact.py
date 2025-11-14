@@ -76,6 +76,22 @@ def get_impactor_diameter(params):
     return pdiameter
 
 
+def get_depth_meters(params):
+    depth = params.get("wdepth", "")
+    depth_units = params.get("wdepthUnits", "meters")
+    try:
+        depth_value = float(depth)
+    except (TypeError, ValueError):
+        depth_value = 0.0
+
+    if depth_units == 'feet':
+        depth_meters = depth_value * 0.3048
+    else:
+        depth_meters = depth_value
+
+    return depth_meters
+
+
 def calculate_distance_km(distance, distance_units):
     try:
         distance_value = float(distance)
@@ -164,7 +180,7 @@ def calc_energy(pdiameter, pdensity, vInput, velocity, theta, depth, distance):
     energy0 = 0.5 * mass * (vInput * 1000) ** 2
     energy0_megatons = energy0 / (4.186 * 10 ** 15)  # joules to megatons conversion
 
-    # Compute the recurrence interval for this energy impact
+    # Compute the recurrence interval for this energy impact (after Bland and Artemieva (2006) MAPS 41 (607-621).
     if mass < 3:
         rec_time = 10 ** (-4.568) * mass ** 0.480
     elif mass < 1.7E10:
@@ -303,7 +319,17 @@ def find_crater(
     CraterRadiusFinal = 0.5E-3 * cdiameter / EARTH_RADIUS_KM
     CraterRadiusTransient = 0.5E-3 * Dtr / EARTH_RADIUS_KM
 
-    return CraterRadiusFinal, CraterRadiusTransient    
+    return {
+        'CraterRadiusFinal': CraterRadiusFinal,
+        'CraterRadiusTransient': CraterRadiusTransient,
+        'cdiameter': cdiameter,
+        'depthfr': depthfr,
+        'vCrater': vCrater,
+        'vratio': vratio,
+        'vMelt': vMelt,
+        'mratio': mratio,
+        'mcratio': mcratio
+    }
 
 
 def atmospheric_entry(pdensity, pdiameter, theta, vInput):
@@ -320,7 +346,7 @@ def atmospheric_entry(pdensity, pdiameter, theta, vInput):
 
     velocity = None
     altitudeBurst = None
-    dispersion = None
+    dispersion = 0
 
     if iFactor >= 1:  # projectile lands intact
         altitudeBurst = 0
@@ -365,5 +391,7 @@ def atmospheric_entry(pdensity, pdiameter, theta, vInput):
     return {
         'velocity': velocity,
         'altitudeBurst': altitudeBurst,
-        'dispersion': dispersion
+        'altitudeBU': altitudeBU,
+        'dispersion': dispersion,
+        'ifactor': iFactor
     }

@@ -1,0 +1,31 @@
+<dl>
+    <dt>
+    <h2>Energy:</h2>
+    </dt>
+    <dd>
+    Energy before atmospheric entry: {{ "{:.2e}".format(energy_joules) }} Joules 
+    {% set megatons = energy_joules / 4.184e15 %}
+    {% if megatons < 1 %}
+        = {{ "{:.2e}".format(energy_joules / 4.184e12) + " Kilotons" }} of TNT
+    {% else %}
+        = {{ "{:.2e}".format(megatons) + " Megatons" }} of TNT
+    {% endif %}
+    </dd>
+    {% if rec_time_years > 1000 %}
+        {% set rec_time_p = rec_time_years | log10 | int %}
+        {% if rec_time_years * 10**rec_time_p < 4.5e9 %}
+        <dd>The average interval between impacts of this size somewhere on Earth during the last 4 billion years is 
+            <b>{{ rec_time }} x 10<sup>{{ rec_time_p }}</sup>years</b>";</dd>
+        {% else %}
+        <dd>The average interval between impacts of this size is longer than the Earth's age.";</dd>
+        <dd>Such impacts could only occur during the accumulation of the Earth, between 4.5 and 4 billion years ago.";</dd>
+        {% endif %}
+    {% else %}
+        {% if (rec_time_years * 12 < 1) %}
+            <dd>The average interval between impacts of this size somewhere on Earth is less than 1 month."</dd>
+        {% else %}
+            <dd>The average interval between impacts of this size somewhere on Earth is 
+            <b>{{ "{:.1f}".format(rec_time_years) }} years.</b></dd>
+        {% endif %}
+    {% endif %}
+</dl>
