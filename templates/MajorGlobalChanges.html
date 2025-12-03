@@ -14,7 +14,7 @@
             {% endif %}
     </dt>
 	
-    {% if mratio >= 0.01 %} {
+    {% if mratio >= 0.01 %}
       <dd><b>{{ (mratio * 100) | round(2) }}</b> percent of the Earth is melted by the impact.</dd>
     {% endif %}
     
@@ -37,20 +37,18 @@
 
     {% if (trot_change > 1E-3) %}
       <dd>Depending on the direction and location of impact, the collision may cause a change in the length of 
-        the day of up to {{ trot_change | duration}};</dd>
+        the day of up to <b>{{ trot_change | duration}}</b>.</dd>
     {% endif %}
 	
-    if ($pratio >= 0.001) {
-      if ($pratio < .01) {
-	print "<dd>The impact shifts the Earth's orbit noticeably.";
-      } elsif ($pratio < 0.1) {
-	print "<dd>The imapct shifts the Earth's orbit substantially.";
-      } else {
-	print "<dd>The impact shifts the Earth's orbit totally.";
-      }
-    } else {
-      print "<dd>The impact does not shift the Earth's orbit noticeably.";
-    }
-	
-	
-    print "</dl>\n";
+    <dd>
+    {% if (orbit_impact == "Noticeable") %}
+	    The impact shifts the Earth's orbit noticeably.
+    {%  elif (orbit_impact == "Substantial") %}
+	    The imapct shifts the Earth's orbit substantially.
+    {% elif (orbit_impact == "Total") %}
+	    The impact shifts the Earth's orbit totally.
+    {% else %}
+        The impact does not shift the Earth's orbit noticeably.
+    {% endif %}
+	</dd>
+

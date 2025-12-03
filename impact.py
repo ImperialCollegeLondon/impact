@@ -395,3 +395,31 @@ def atmospheric_entry(pdensity, pdiameter, theta, vInput):
         'dispersion': dispersion,
         'ifactor': iFactor
     }
+
+def orbit_impact(pratio):
+    if pratio >= 0.001:
+        if pratio < 0.01:
+            return "Noticeable"
+        elif pratio < 0.1:
+            return "Substantial"
+        else:
+            return "Total"
+    else:
+        return "Negligible"    
+
+
+def calculate_dispersion_ellipse(dispersion, theta, distance_km):
+    if dispersion == 0 or distance_km == 0:
+        return (0, 0)
+
+    # Convert dispersion from meters to kilometers
+    dispersion_km = dispersion / 1000.0
+
+    # Calculate semi-major and semi-minor axes
+    semi_major = dispersion_km * math.cos(theta * math.pi / 180) + distance_km * 0.01
+    semi_minor = dispersion_km * math.sin(theta * math.pi / 180) + distance_km * 0.005
+
+    return (semi_major, semi_minor)
+
+def calculate_lost_energy(mass, entry_vkm, ending_vkm):
+    return 0.5 * mass * (math.pow(entry_vkm * 1000, 2) - math.pow(ending_vkm * 1000, 2)) # in Joules

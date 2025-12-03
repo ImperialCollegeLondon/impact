@@ -12,10 +12,9 @@
     {% endif %}
     </dd>
     {% if rec_time_years > 1000 %}
-        {% set rec_time_p = rec_time_years | log10 | int %}
-        {% if rec_time_years * 10**rec_time_p < 4.5e9 %}
+        {% if rec_time_years < 4.5e9 %}
         <dd>The average interval between impacts of this size somewhere on Earth during the last 4 billion years is 
-            <b>{{ rec_time }} x 10<sup>{{ rec_time_p }}</sup>years</b>";</dd>
+            <b>{{ rec_time_years | scientific | safe }} years</b>.</dd>
         {% else %}
         <dd>The average interval between impacts of this size is longer than the Earth's age.";</dd>
         <dd>Such impacts could only occur during the accumulation of the Earth, between 4.5 and 4 billion years ago.";</dd>

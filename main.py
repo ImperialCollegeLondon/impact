@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import impact
+import formatters
 
 app = Flask(__name__)
 
@@ -97,6 +98,9 @@ def map_page():
     
     qCrater = atmospheric_entry_effects['altitudeBurst'] <= 0
     airblast_radii = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, crater_results['CraterRadiusFinal'])
+
+    lost_energy = impact.calculate_lost_energy(energy_results['mass'], vkm, atmospheric_entry_effects["velocity"])
+    dispersion_ellipse = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)
     return render_template('map.html', location=impact.get_location(request.args), 
                            density=density, distance_km=dist, 
                            velocity_km_per_second=vkm, 
@@ -111,23 +115,15 @@ def map_page():
                             lratio=energy_results['lratio'],
                            energy_joules=energy_results['energy0'],
                            rec_time_years=energy_results['rec_time'],
-                           target_density=request.args.get('tdens', '2500'))
+                           target_density=request.args.get('tdens', '2500'),
+                           orbit_impact=impact.orbit_impact(energy_results['pratio']),
+                           residual_velocity=atmospheric_entry_effects['velocity'],
+                           lost_energy_joules=lost_energy,
+                           dispersion_ellipse=dispersion_ellipse)
 
-def format_duration(seconds):
-    seconds = int(seconds)
-    if seconds < 60:
-        return f"{seconds} seconds"
-    elif seconds < 3600:
-        minutes = seconds // 60
-        seconds = seconds % 60
-        return f"{minutes} minutes, {seconds} seconds"
-    else:
-        hours = seconds // 3600
-        minutes = (seconds % 3600) // 60
-        seconds = seconds % 60
-        return f"{hours} hours, {minutes} minutes, {seconds} seconds"
 
 
 if __name__ == '__main__':
-    app.jinja_env.filters['duration'] = format_duration
+    app.jinja_env.filters['duration'] = formatters.format_duration
+    app.jinja_env.filters['scientific'] = formatters.format_scientific
     app.run(debug=True)
