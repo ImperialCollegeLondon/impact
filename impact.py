@@ -11,6 +11,7 @@ G = 9.8            		# acceleration due to gravity
 DRAG_COEFFICIENT = 2	# drag coefficient
 MELT_COEFFICIENT = 8.9 * 10**-21		# coefficient for melt volume calc
 SCALE_HEIGHT = 8000			# scale height of atmosphere in m
+PO = 10**5;				# ambient pressure in Pa
 
 def get_location(params):
     # Extract parameters
@@ -242,9 +243,9 @@ def calc_energy(pdiameter, pdensity, vInput, velocity, theta, depth, distance):
     # Return results as a dictionary
     return {
         'mass': mass,
-        'energy0': energy0,
+        'energy_joules': energy0,
         'energy0_megatons': energy0_megatons,
-        'rec_time': rec_time,
+        'rec_time_years': rec_time,
         'linmom': linmom,
         'angmom': angmom,
         'lratio': lratio,
@@ -389,7 +390,7 @@ def atmospheric_entry(pdensity, pdiameter, theta, vInput):
     velocity /= 1000  # convert to km/s
 
     return {
-        'velocity': velocity,
+        'residual_velocity': velocity,
         'altitudeBurst': altitudeBurst,
         'altitudeBU': altitudeBU,
         'dispersion': dispersion,
@@ -408,6 +409,16 @@ def orbit_impact(pratio):
         return "Negligible"    
 
 
+def describe_decibels(dec_level):
+    if (dec_level == 0):
+        return "The blast wave will not be heard."
+    elif (dec_level <= 20): return "Barely Audible"
+    elif (dec_level <= 50): return "Easily Heard"
+    elif (dec_level <= 90): return "Loud as heavy traffic"
+    elif (dec_level <= 120): return "May cause ear pain"
+    else: return "Dangerously Loud"
+
+
 def calculate_dispersion_ellipse(dispersion, theta, distance_km):
     if dispersion == 0 or distance_km == 0:
         return (0, 0)
@@ -421,5 +432,59 @@ def calculate_dispersion_ellipse(dispersion, theta, distance_km):
 
     return (semi_major, semi_minor)
 
+
 def calculate_lost_energy(mass, entry_vkm, ending_vkm):
     return 0.5 * mass * (math.pow(entry_vkm * 1000, 2) - math.pow(ending_vkm * 1000, 2)) # in Joules
+
+
+def air_blast(energy_blast, distance, altitudeBurst):
+    vsound = 330          # speed of sound in m/s
+    r_cross0 = 290        # radius at which relationship between overpressure and distance changes (for surface burst)
+    op_cross = 75000      # overpressure at crossover
+
+    energy_ktons = energy_blast
+
+    # Arrival time is straight line distance divided by sound speed
+    slantRange = math.sqrt(distance**2 + (altitudeBurst/1000)**2)  # for air burst, distance is slant range from explosion
+    shock_arrival = (slantRange * 1000) / vsound  # distance in meters divided by velocity of sound in m/s
+
+    # Scale distance to equivalent for a kiloton explosion
+    sf = energy_ktons ** (1/3)
+    d_scale = (distance * 1000) / sf
+
+    # Scale burst altitude to equivalent for a kiloton explosion
+    z_scale = altitudeBurst / sf
+    r_cross = r_cross0 + 0.65 * z_scale
+    r_mach = 550 * z_scale / (1.2 * (550 - z_scale))
+    if z_scale >= 550:
+      r_mach = 1e30
+
+    if altitudeBurst > 0:
+      d_smooth = z_scale**2 * 0.00328
+      p_machT = ((r_cross * op_cross) / 4) * (1 / (r_mach + d_smooth)) * (1 + 3 * (r_cross / (r_mach + d_smooth)) ** 1.3)
+      # p_0 = 3.1423e11 / z_scale**2.6
+      # expFactor = -34.87 / z_scale**1.73
+      # p_regT = p_0 * math.exp(expFactor * (r_mach - d_smooth))
+      p_regT = 3.14e11 * ((r_mach - d_smooth) ** 2 + z_scale ** 2) ** (-1.3) + 1.8e7 * ((r_mach - d_smooth) ** 2 + z_scale ** 2) ** (-0.565)
+    else:
+      d_smooth = 0
+      p_machT = 0
+
+    if d_scale >= (r_mach + d_smooth):
+      opressure = ((r_cross * op_cross) / 4) * (1 / d_scale) * (1 + 3 * (r_cross / d_scale) ** 1.3)
+    elif d_scale <= (r_mach - d_smooth):
+      # opressure = p_0 * math.exp(expFactor * d_scale)
+      opressure = 3.14e11 * (d_scale ** 2 + z_scale ** 2) ** (-1.3) + 1.8e7 * (d_scale ** 2 + z_scale ** 2) ** (-0.565)
+    else:
+      opressure = p_regT - (d_scale - r_mach + d_smooth) * 0.5 * (p_regT - p_machT) / d_smooth
+
+    # Wind velocity
+    vmax = ((5 * opressure) / (7 * PO)) * (vsound / math.sqrt(1 + (6 * opressure) / (7 * PO)))
+
+    ### sound intensity
+    if (opressure > 0):
+      dec_level = 20 * (math.log(opressure) / math.log(10));
+    else:
+      dec_level = 0;
+ 
+    return dict(shock_arrival=shock_arrival, opressure=opressure, vmax=vmax, dec_level=dec_level, sound_description=describe_decibels(dec_level)    )
