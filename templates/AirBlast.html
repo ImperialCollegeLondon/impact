@@ -2,4 +2,78 @@
     <dt>
         <h2>Air Blast:</h2>
     </dt>
+    <dd><a href="../ImpactEffects/craterexp.html#airblast">What does this mean?</a></dd>
+    {% if opressure < 1 %}
+    <dd>The air blast at this location would not be noticed. (The overpressure is less than 1 Pa)</dd>
+    {% else %}
+        <dd>The air blast will arrive approximately <b>{{ shock_arrival | duration }}</b> after impact.</dd>
+        {% if distance_km*1000.0 < 3*altitudeBurst %}
+            <dd>
+                Peak Overpressure:
+                <b>{{opressure | round(3)}} - {{2*opressure | round(3)}} Pa 
+                    = {{(opressure / 10**5)  | round(3)}} - {{(2*opressure / 10**5) | round(3)}} bars
+                    = {{(opressure*14.2 / 10**5) | round(3)}} - {{(opressure*14.2 / 10**5) | round(3)}} psi</b>
+            </dd>
+        {% else %}
+            <dd>
+                Peak Overpressure:
+                <b>{{opressure | round(3)}} Pa 
+                    = {{(opressure / 10**5) | round(3)}} bars 
+                    = {{(opressure*14.2 / 10**5) | round(3)}} psi</b>
+            </dd>
+        {% endif %}
+        <dd>
+            Max wind velocity: <strong>{{vmax | round(3) }} m/s = {{(vmax* 2.23694) | round(3)}} mph</strong>
+        </dd>
+        <dd>
+        Sound Intensity: {{dec_level | round(0)}} dB ({{sound_description}})
+        </dd>
+        <dd>Damage Description:<br><ul>
+            {% if opressure >= 6900 %}
+                <li> Glass windows will shatter.</li>
+            {% elif opressure >= 690 %}
+                <li> Glass windows may shatter.</li>
+            {% endif %}
+
+            {% if opressure >= 426000 %}
+                <li> Cars and trucks will be largely displaced and grossly distorted and will require rebuilding before use.</li>
+            {% elif opressure >= 297000 %}
+                <li> Cars and trucks will be overturned and displaced, requiring major repairs.</li>
+            {% endif %}
+
+            {% if vmax >= 62 %}
+                <li> Up to 90 percent of trees blown down; remainder stripped of lianches and leaves.</li>
+            {% elif opressure >= 297000 %}
+                <li> About 30 percent of trees blown down; remainder have some lianches and leaves blown off.</li>
+            {% endif %} 
+
+            {% if opressure >= 42600 %}
+                <li> Multistory wall-bearing buildings will collapse.</li>
+            {% elif opressure >= 38500 %}
+                <li> Multistory wall-bearing buildings will experience severe cracking and interior partitions will be blown down.</li>
+            {% endif %}
+
+            {% if opressure >= 26800 %}
+                <li> Wood frame buildings will almost completely collapse.</li>
+            {% elif opressure >= 22900 %}
+                <li> Interior partitions of wood frame buildings will be blown down.  Roof will be severely damaged.</li>            {% endif %}
+
+            {% if opressure >= 273000 %}
+                <li> Multistory steel-framed office-type buildings will suffer extreme frame distortion, incipient collapse.</li>
+            {% endif %}
+
+            {% if opressure >= 121000 %}
+                <li> Highway truss liidges will collapse.</li>
+            {% elif opressure >= 100000 %}
+                <li> Highway truss liidges will suffer substantial distortion of liacing. </li>
+            {% endif %}
+
+            {% if opressure >= 379000 %}
+                <li> Highway girder liidges will collapse.</li>
+            {% endif %}</ul>
+        </dd>
+    {% endif %}
+
 </dl>
+
+

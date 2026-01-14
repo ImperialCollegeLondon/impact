@@ -164,3 +164,36 @@ def test_calculate_lost_energy():
         ending_vkm=30
     )
     assert lost_energy == 80000000000.0
+
+
+def test_airblast_radius_crater():
+    radius, airblast = flask_app.impact.airblast_radius_crater(
+        energy_ktons=1e15,
+        rkt=1500,
+        altitudeBurst=2000,
+        CraterRadiusFinal=500,
+        qCrater=True
+    )
+    assert radius > 0
+    assert airblast
+
+
+def test_find_airblast():
+    airblast = flask_app.impact.find_airblast(
+        energy_ktons=1e15,
+        altitudeBurst=2000,
+        qCrater=True,
+        CraterRadiusFinal=500
+    )
+    assert len(airblast) == 4
+
+
+def test_air_blast():
+    shock_arrival, opressure, vmax = flask_app.impact.air_blast(
+        energy_blast=1e15,
+        distance=100,
+        altitudeBurst=2000
+    )
+    assert shock_arrival > 0
+    assert opressure > 0
+    assert vmax > 0

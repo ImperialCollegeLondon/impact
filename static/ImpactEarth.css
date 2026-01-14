@@ -110,7 +110,10 @@ h3 {
     font-size: 16pt;
     color: #000000;
 }
-
+li {
+    margin: 20px;
+    list-style-type: none;
+}
 
 .fullSize {
     display: block;
