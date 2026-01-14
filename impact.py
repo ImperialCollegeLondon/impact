@@ -488,3 +488,42 @@ def air_blast(energy_blast, distance, altitudeBurst):
       dec_level = 0;
  
     return dict(shock_arrival=shock_arrival, opressure=opressure, vmax=vmax, dec_level=dec_level, sound_description=describe_decibels(dec_level)    )
+
+
+def find_thermal(energy_surface, energy_megatons):
+  eta = 3e-3  # factor for scaling thermal energy
+  T_star = 3000  # temperature of fireball
+  Rf = 2e-6 * (energy_surface) ** (1/3)  # Rf is in km
+  sigma = 5.67e-8  # Stephan-Boltzmann constant
+  ignite_clothing = (energy_megatons) ** (1/6) * 1e6
+
+  R_earth = EARTH_RADIUS_KM
+  
+  # Radius of fireball as a fraction of Earth radius
+  RadiusFireball = Rf / R_earth
+
+  # Radius of fireball visibility as a fraction of Earth radius
+  RadiusVisibleFireball = math.acos(1 - RadiusFireball)
+
+  # Radius at which clothing ignites
+  r_upr = RadiusVisibleFireball * R_earth
+  r_low = RadiusFireball * R_earth
+  error = ignite_clothing
+  count = 0
+  r_guess = 0
+  while abs(error) > 1e-3 * ignite_clothing and count < 10:
+    count += 1
+    r_guess = 0.5 * (r_low + r_upr)
+    delta = r_guess / R_earth
+    h = (1 - math.cos(delta)) * R_earth  # h is in km
+    del_angle = math.acos(h / Rf)
+    f = (2 / math.pi) * (del_angle - (h / Rf) * math.sin(del_angle))
+    thermal_exposure = f * (eta * energy_surface) / (2 * math.pi * (r_guess * 1000) ** 2)
+    error = thermal_exposure - ignite_clothing
+    if error < 0.0:
+      r_upr = r_guess
+    else:
+      r_low = r_guess
+
+  RadiusClothingIgnition = r_guess / R_earth
+  return dict(RadiusClothingIgnition=RadiusClothingIgnition, RadiusVisibleFireball=RadiusVisibleFireball, RadiusFireball=RadiusFireball)

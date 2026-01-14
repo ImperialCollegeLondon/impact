@@ -111,12 +111,13 @@ def map_page():
     context["mratio"] = crater_results['mratio']   
     
     qCrater = atmospheric_entry_effects['altitudeBurst'] <= 0
-    airblast_radii = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, crater_results['CraterRadiusFinal'])
+    context["airblast_radii"] = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, crater_results['CraterRadiusFinal'])
     context.update(impact.air_blast(energy_results['energy_blast'], dist, atmospheric_entry_effects['altitudeBurst']))
 
     context["lost_energy_joules"] = impact.calculate_lost_energy(energy_results['mass'], vkm, atmospheric_entry_effects["residual_velocity"])
     context["dispersion_ellipse"] = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)
 
+    context.update(impact.find_thermal(energy_results['energy_surface'], energy_results['energy_megatons']))
     return render_template('map.html', **context)
 
 
