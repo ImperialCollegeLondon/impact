@@ -30,7 +30,11 @@
     {% include "AirBlast.html" %}
 <script>
     var map = L.map('map').setView([0, 0], 2);
-
+    var airblastRadii = [
+        {% for radius in airblast_radii %}
+            {{ radius[0] }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
     // World Imagery base layer
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
@@ -40,10 +44,17 @@
     L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Place names &copy; Esri'
     }).addTo(map);
+
     {% if location %}
-    var marker = L.marker([{{ location[0] }}, {{ location[1] }}]).addTo(map);
-    marker.bindPopup("Selected Location").openPopup();
-    map.setView([{{ location[0] }}, {{ location[1] }}], 10);
+    var loc = [{{ location[0] }}, {{ location[1] }}];
+
+    var marker = L.marker(loc).addTo(map);
+    marker.bindPopup("Impact Location").openPopup();
+    map.setView(loc, 10);
+
+    add_airblast(loc, airblastRadii, map);
+    add_fireball(loc, airblastRadii, map);
+    
     {% endif %}
 </script>
 {% endblock %}
