@@ -65,25 +65,38 @@ def map_page():
         density = float(request.args.get('pdens', ''))
     except ValueError:
         density = float(request.args.get('pdens_select', '0'))
+    context = dict(location=impact.get_location(request.args), 
+                   density=density, 
+                   target_density=request.args.get('tdens', '2500'),
+                   distance_km=dist)
 
     diameter_meters = impact.get_impactor_diameter(request.args)
+    context['diameter_meters'] = diameter_meters
 
     vkm = impact.calculate_velocity_km(request.args.get('vel', ''), request.args.get('velocityUnits', 'km/s'))
+    context['velocity_km_per_second'] = vkm
+
     theta = float(request.args.get('theta', '45'))
+    context['impact_angle'] = theta
+
     depth_meters=impact.get_depth_meters(request.args)
+    context['depth_meters'] = depth_meters
 
     # Calculate the effects of atmospheric entry
     atmospheric_entry_effects = impact.atmospheric_entry(density, diameter_meters, theta, vkm)
+    context.update(atmospheric_entry_effects)
 
     energy_results = impact.calc_energy(
         pdiameter=diameter_meters,
         pdensity=density,
         vInput=vkm,
-        velocity=atmospheric_entry_effects['velocity'],
+        velocity=atmospheric_entry_effects['residual_velocity'],
         theta=theta,
         depth=depth_meters,
         distance=dist
     )
+    context.update(energy_results)
+    context["orbit_impact"] = impact.orbit_impact(energy_results['pratio'])
 
     crater_results = impact.find_crater(theta=theta, 
                         depth=depth_meters,
@@ -95,31 +108,16 @@ def map_page():
                         dispersion=atmospheric_entry_effects['dispersion'], 
                         energy_seafloor=energy_results['energy_seafloor'],
                         )
+    context["mratio"] = crater_results['mratio']   
     
     qCrater = atmospheric_entry_effects['altitudeBurst'] <= 0
     airblast_radii = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, crater_results['CraterRadiusFinal'])
+    context.update(impact.air_blast(energy_results['energy_blast'], dist, atmospheric_entry_effects['altitudeBurst']))
 
-    lost_energy = impact.calculate_lost_energy(energy_results['mass'], vkm, atmospheric_entry_effects["velocity"])
-    dispersion_ellipse = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)
-    return render_template('map.html', location=impact.get_location(request.args), 
-                           density=density, distance_km=dist, 
-                           velocity_km_per_second=vkm, 
-                           diameter_meters=diameter_meters,
-                           trot_change=energy_results['trot_change'],
-                           impact_angle=theta,
-                           depth=depth_meters,
-                           ifactor=atmospheric_entry_effects['ifactor'],
-                           altitudeBU =atmospheric_entry_effects['altitudeBU'],
-                           altitudeBurst=atmospheric_entry_effects['altitudeBurst'],
-                           mratio=crater_results['mratio'],
-                            lratio=energy_results['lratio'],
-                           energy_joules=energy_results['energy0'],
-                           rec_time_years=energy_results['rec_time'],
-                           target_density=request.args.get('tdens', '2500'),
-                           orbit_impact=impact.orbit_impact(energy_results['pratio']),
-                           residual_velocity=atmospheric_entry_effects['velocity'],
-                           lost_energy_joules=lost_energy,
-                           dispersion_ellipse=dispersion_ellipse)
+    context["lost_energy_joules"] = impact.calculate_lost_energy(energy_results['mass'], vkm, atmospheric_entry_effects["residual_velocity"])
+    context["dispersion_ellipse"] = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)
+
+    return render_template('map.html', **context)
 
 
 
