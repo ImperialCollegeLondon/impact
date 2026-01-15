@@ -52,8 +52,13 @@
     marker.bindPopup("Impact Location").openPopup();
     map.setView(loc, 10);
 
-    add_airblast(loc, airblastRadii, map);
-    add_fireball(loc, airblastRadii, map);
+    var airblastLayer = add_airblast(loc, airblastRadii, map);
+    //L.control.layers(null, { "Airblast": airblastLayer }).addTo(map);
+
+    var fireballRadii = [ {{RadiusFireball}}, {{RadiusClothingIgnition}}, {{RadiusVisibleFireball}} ];
+
+    var fireballLayer = add_fireball(loc, fireballRadii, map);
+    L.control.layers(null, { "Airblast": airblastLayer, "Fireball": fireballLayer }).addTo(map);
     
     {% endif %}
 </script>

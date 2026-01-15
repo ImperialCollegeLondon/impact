@@ -26,25 +26,34 @@ function add_airblast(groundzero, airblastRadii, map ) {
 
         airblastLayer.addLayer(airblastCircle);
     });
-    
-    L.control.layers(null, { "Airblast": airblastLayer }).addTo(map);
+    return airblastLayer;
 }
 
 function add_fireball(groundzero, fireballRadii, map ) {
     var fireballLayer = L.layerGroup();
     fireballLayer.addTo(map);
 
-    // Find existing layer control, if any, and add Fireball layer to it
-    var existingControl = null;
-    map.eachLayer(function(layer) {
-        if (layer instanceof L.Control.Layers) {
-            existingControl = layer;
-        }
-    });
+    fireballRadii.slice().reverse().forEach(function(radius, idx) {
+        var blastCircle = L.circle(groundzero, {
+            radius: radius*1.274E7*0.5,
+            color: 'red',
+            fillColor: 'red',
+            fillOpacity: 0.25,
+            weight: 1
+        })
 
-    if (existingControl) {
-        existingControl.addOverlay(fireballLayer, "Fireball");
-    } else {
-        L.control.layers(null, { "Fireball": fireballLayer }).addTo(map);
-    }
+        var label_F = ["Fireball Visible","Clothing Ignites","Fireball"];
+        blastCircle.on('mouseover', function (e) {
+            var popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent(label_F[idx] + ": " + (radius*1.274E7*0.5).toLocaleString() + " meters")
+                .openOn(map);
+        });
+        blastCircle.on('mouseout', function (e) {
+            map.closePopup();
+        });
+
+        fireballLayer.addLayer(blastCircle);
+    });
+    return fireballLayer
 }
