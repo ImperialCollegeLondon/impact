@@ -3,8 +3,6 @@ function add_airblast(groundzero, airblastRadii, map ) {
 
     var airblastLayer = L.layerGroup();
 
-    airblastLayer.addTo(map);
-    
     airblastRadii.slice().reverse().forEach(function(radius, idx) {
         var airblastCircle = L.circle(groundzero, {
             radius: radius*1.274E7*0.5,
@@ -31,7 +29,6 @@ function add_airblast(groundzero, airblastRadii, map ) {
 
 function add_fireball(groundzero, fireballRadii, map ) {
     var fireballLayer = L.layerGroup();
-    fireballLayer.addTo(map);
 
     fireballRadii.slice().reverse().forEach(function(radius, idx) {
         var blastCircle = L.circle(groundzero, {
@@ -62,7 +59,6 @@ function add_ejecta(groundzero, ejectaRadii, map ) {
     var label_E = ["Ejecta thickness > 1 cm","Ejecta thickness > 10 cm","Ejecta thickness > 1 m","Ejecta thickness > 10 m","Ejecta thickness > 100 m"];
 
     var ejectaLayer = L.layerGroup();
-    ejectaLayer.addTo(map);
 
     ejectaRadii.forEach(function(radius, idx) {
         var ejectaCircle = L.circle(groundzero, {
@@ -97,7 +93,6 @@ function add_seismic(groundzero, seismicRadii, map ) {
         "Mercalli Intensity XII"];
 
     var seismicLayer = L.layerGroup();
-    seismicLayer.addTo(map);
 
     seismicRadii.forEach(function(radius, idx) {
         var seismicCircle = L.circle(groundzero, {
@@ -132,7 +127,6 @@ function add_tsunami(groundzero, tsunamiRadii, map ) {
             "Tsunami wave height > 1 km"];
 
     var tsunamiLayer = L.layerGroup();
-    tsunamiLayer.addTo(map);
 
     tsunamiRadii.forEach(function(radius, idx) {
         var tsunamiCircle = L.circle(groundzero, {
@@ -158,3 +152,34 @@ function add_tsunami(groundzero, tsunamiRadii, map ) {
     });
     return tsunamiLayer;
 }
+
+function add_crater(groundzero, craterRadii, map ) {
+    var label_C = ['Final Crater','Transient Crater'];
+
+    var craterLayer = L.layerGroup();
+
+    craterRadii.forEach(function(radius, idx) {
+        var craterCircle = L.circle(groundzero, {
+            radius: radius*1.274E7*0.5,
+            color: 'white',
+            fillColor: 'white',
+            fillOpacity: 0.25,
+            weight: 1
+        })
+
+        craterCircle.on('mouseover', function (e) {
+            var popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent(label_C[idx] + ": " + (radius*1.274E7*0.5).toLocaleString() + " meters")
+                .openOn(map);
+        }
+        );
+        craterCircle.on('mouseout', function (e) {
+            map.closePopup();
+        });
+
+        craterLayer.addLayer(craterCircle);
+    });
+    return craterLayer;
+}
+
