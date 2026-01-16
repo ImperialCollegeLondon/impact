@@ -57,3 +57,34 @@ function add_fireball(groundzero, fireballRadii, map ) {
     });
     return fireballLayer
 }
+
+function add_ejecta(groundzero, ejectaRadii, map ) {
+    var label_E = ["Ejecta thickness > 1 cm","Ejecta thickness > 10 cm","Ejecta thickness > 1 m","Ejecta thickness > 10 m","Ejecta thickness > 100 m"];
+
+    var ejectaLayer = L.layerGroup();
+    ejectaLayer.addTo(map);
+
+    ejectaRadii.forEach(function(radius, idx) {
+        var ejectaCircle = L.circle(groundzero, {
+            radius: radius[1]*1.274E7*0.5,
+            color: 'orange',
+            fillColor: 'orange',
+            fillOpacity: 0.25,
+            weight: 1
+        })
+
+        ejectaCircle.on('mouseover', function (e) {
+            var popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent(label_E[idx] + ": " + (radius[1]*1.274E7*0.5).toLocaleString() + " meters")
+                .openOn(map);
+        }
+        );
+        ejectaCircle.on('mouseout', function (e) {
+            map.closePopup();
+        });
+
+        ejectaLayer.addLayer(ejectaCircle);
+    });
+    return ejectaLayer;
+}

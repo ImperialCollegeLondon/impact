@@ -118,6 +118,7 @@ def map_page():
     context["dispersion_ellipse"] = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)
 
     context.update(impact.find_thermal(energy_results['energy_surface'], energy_results['energy_megatons']))
+    context["ejecta_radii"] = impact.find_ejecta(crater_results['Dtr'], crater_results['CraterRadiusTransient'], crater_results['CraterRadiusFinal'])
     return render_template('map.html', **context)
 
 

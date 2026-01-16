@@ -58,7 +58,16 @@
     var fireballRadii = [ {{RadiusFireball}}, {{RadiusClothingIgnition}}, {{RadiusVisibleFireball}} ];
 
     var fireballLayer = add_fireball(loc, fireballRadii, map);
-    L.control.layers(null, { "Airblast": airblastLayer, "Fireball": fireballLayer }).addTo(map);
+
+    var ejectaRadii = [
+        {% for radius in ejecta_radii %}
+            [{{ radius[0] }},{{radius[1]}}]{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+    var ejectaLayer = add_ejecta(loc, ejectaRadii, map);
+    L.control.layers(null, { "Airblast": airblastLayer, 
+                                "Fireball": fireballLayer,
+                            "Ejecta": ejectaLayer }).addTo(map);
     
     {% endif %}
 </script>

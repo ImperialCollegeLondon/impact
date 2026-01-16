@@ -323,13 +323,8 @@ def find_crater(
     return {
         'CraterRadiusFinal': CraterRadiusFinal,
         'CraterRadiusTransient': CraterRadiusTransient,
-        'cdiameter': cdiameter,
-        'depthfr': depthfr,
-        'vCrater': vCrater,
-        'vratio': vratio,
-        'vMelt': vMelt,
+        'Dtr': Dtr,
         'mratio': mratio,
-        'mcratio': mcratio
     }
 
 
@@ -527,3 +522,32 @@ def find_thermal(energy_surface, energy_megatons):
 
   RadiusClothingIgnition = r_guess / R_earth
   return dict(RadiusClothingIgnition=RadiusClothingIgnition, RadiusVisibleFireball=RadiusVisibleFireball, RadiusFireball=RadiusFireball)
+
+
+def find_ejecta(Dtr, CraterRadiusTransient, CraterRadiusFinal):
+    """
+    Calculates the ejecta radii for various particle sizes given crater parameters.
+
+    Args:
+        Dtr (float): Diameter of the transient crater.
+        CraterRadiusTransient (float): Radius of the transient crater.
+        CraterRadiusFinal (float): Radius of the final crater.
+
+    Returns:
+        dict: A dictionary mapping particle size labels ('100m', '10m', '1m', '10cm', '1cm')
+              to their corresponding ejecta radii as calculated by the `ejecta_radius` function.
+    """
+    return [(m, ejecta_radius(m, Dtr, CraterRadiusTransient, CraterRadiusFinal))
+             for m in [0.01, 0.1, 1, 10, 100]]
+
+
+def ejecta_radius(EjectaThickness, Dtr, CraterRadiusTransient, CraterRadiusFinal):
+    third = 1.0 / 3.0
+    radius = 1e-3 * (Dtr ** 4 / (112 * EjectaThickness)) ** third / EARTH_RADIUS_KM
+    if radius > CraterRadiusTransient:
+        qEjecta = 1
+    else:
+        radius = 0.0
+    if radius > 0.5 * math.pi:
+        radius = CraterRadiusFinal
+    return radius

@@ -49,8 +49,8 @@ def test_atmospheric_entry():
         theta=45,
         vInput=20
     )
-    assert 'velocity' in results
-    assert pytest.approx(2.49, rel=0.01) == results['velocity']
+    assert 'residual_velocity' in results
+    assert pytest.approx(2.49, rel=0.01) == results['residual_velocity']
 
     assert 'altitudeBurst' in results
     assert pytest.approx(2273, rel=0.1) == results['altitudeBurst']
@@ -189,11 +189,18 @@ def test_find_airblast():
 
 
 def test_air_blast():
-    shock_arrival, opressure, vmax = flask_app.impact.air_blast(
+    airblast = flask_app.impact.air_blast(
         energy_blast=1e15,
         distance=100,
         altitudeBurst=2000
     )
-    assert shock_arrival > 0
-    assert opressure > 0
-    assert vmax > 0
+    assert airblast['shock_arrival'] > 0
+    assert airblast['opressure'] > 0
+    assert airblast['vmax'] > 0
+
+def test_find_thermal():
+    thermal = flask_app.impact.find_thermal(
+        energy_megatons=1e15,
+        energy_surface=2000
+    )
+    assert len(thermal) == 3
