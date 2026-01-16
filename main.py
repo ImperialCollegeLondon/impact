@@ -119,6 +119,10 @@ def map_page():
 
     context.update(impact.find_thermal(energy_results['energy_surface'], energy_results['energy_megatons']))
     context["ejecta_radii"] = impact.find_ejecta(crater_results['Dtr'], crater_results['CraterRadiusTransient'], crater_results['CraterRadiusFinal'])
+
+    ### If at least Mercalli intensity III is reached, add the option to plot seismic shaking intensity
+    context["seismic_radii"] = impact.find_seismic(energy_results['energy_seafloor'], crater_results['CraterRadiusFinal']   )
+    print(context["seismic_radii"])
     return render_template('map.html', **context)
 
 

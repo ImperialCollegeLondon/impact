@@ -65,9 +65,19 @@
         {% endfor %}
     ];
     var ejectaLayer = add_ejecta(loc, ejectaRadii, map);
-    L.control.layers(null, { "Airblast": airblastLayer, 
-                                "Fireball": fireballLayer,
-                            "Ejecta": ejectaLayer }).addTo(map);
+
+    var seismicRadii = [
+        {% for radius in seismic_radii %}
+            [{{ radius[0] }},{{radius[1]}}]{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];   
+    
+    var seismicLayer = add_seismic(loc, seismicRadii, map);
+
+    L.control.layers(null, {"Airblast": airblastLayer, 
+                            "Fireball": fireballLayer,
+                            "Ejecta": ejectaLayer,
+                            "Seismic": seismicLayer  }).addTo(map);
     
     {% endif %}
 </script>

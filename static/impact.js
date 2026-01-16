@@ -67,8 +67,8 @@ function add_ejecta(groundzero, ejectaRadii, map ) {
     ejectaRadii.forEach(function(radius, idx) {
         var ejectaCircle = L.circle(groundzero, {
             radius: radius[1]*1.274E7*0.5,
-            color: 'orange',
-            fillColor: 'orange',
+            color: 'skyblue',
+            fillColor: 'skyblue',
             fillOpacity: 0.25,
             weight: 1
         })
@@ -87,4 +87,39 @@ function add_ejecta(groundzero, ejectaRadii, map ) {
         ejectaLayer.addLayer(ejectaCircle);
     });
     return ejectaLayer;
+}
+
+function add_seismic(groundzero, seismicRadii, map ) {
+    var label_S = ["Mercalli Intensity III; Vibration like passing of light trucks.",
+        "Mercalli Intensity V; Small unstable objects displaced.",
+        "Mercalli Intensity VII; Difficult to stand; landslides; damage to buildings.",
+        "Mercalli Intensity IX",
+        "Mercalli Intensity XII"];
+
+    var seismicLayer = L.layerGroup();
+    seismicLayer.addTo(map);
+
+    seismicRadii.forEach(function(radius, idx) {
+        var seismicCircle = L.circle(groundzero, {
+            radius: radius[1]*1.274E7*0.5,
+            color: 'green',
+            fillColor: 'green',
+            fillOpacity: 0.25,
+            weight: 1
+        })
+
+        seismicCircle.on('mouseover', function (e) {
+            var popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent(label_S[idx] + ": " + (radius[1]*1.274E7*0.5).toLocaleString() + " meters")
+                .openOn(map);
+        }
+        );
+        seismicCircle.on('mouseout', function (e) {
+            map.closePopup();
+        });
+
+        seismicLayer.addLayer(seismicCircle);
+    });
+    return seismicLayer;
 }

@@ -204,3 +204,20 @@ def test_find_thermal():
         energy_surface=2000
     )
     assert len(thermal) == 3
+
+def test_ejecta_radius():
+    radius = flask_app.impact.ejecta_radius(
+        EjectaThickness=1,
+        Dtr=1e8,
+        CraterRadiusTransient=300,
+        CraterRadiusFinal=500
+    )
+    assert radius == 500
+
+def test_seismic_radius():
+    radius = flask_app.impact.seismic_radius(
+        mag = 5,
+        mag_eff=3,
+        CraterRadiusFinal=1000
+    )
+    assert radius > 0
