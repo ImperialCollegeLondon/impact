@@ -10,7 +10,6 @@ def index():
 
 @app.route('/ImpactEffects')
 def impact_effects():
-    locations = ["London", "Los Angeles", "New York", "Berlin", "Paris", "Johannesburg", "Sydney"]
     craters = ["Acraman (Australia)", "Araguainha (Brazil)", "Barringer (USA)", "Chicxulub (Mexico)", "Chesapeake Bay (USA)", "Eltanin (Bellingshausen Sea)", "Popiagai (Russia)", "Ries (Germany)", "Siljan (Sweden)", "Sudbury (Canada)", "Vredefort (South Africa)"]
     density = {
         "1000": "1000 kg/m^3 for ice",
@@ -52,7 +51,7 @@ def impact_effects():
         "14000": "Chicxulub (14 km)"
     }
     return render_template('ImpactEffects.html', 
-                           locations=sorted(locations), craters=sorted(craters), pdens_options=density.items(), diameter_options=diameter_options.items())
+                           locations=impact.get_cities(), craters=sorted(craters), pdens_options=density.items(), diameter_options=diameter_options.items())
 
 
 @app.route('/map')
@@ -98,7 +97,7 @@ def map_page():
     context.update(energy_results)
     context["orbit_impact"] = impact.orbit_impact(energy_results['pratio'])
 
-    crater_results = impact.find_crater(theta=theta, 
+    context.update(impact.find_crater(theta=theta, 
                         depth=depth_meters,
                         mass=energy_results['mass'], 
                         target_density=float(request.args.get('tdens', '2500')),
@@ -107,24 +106,23 @@ def map_page():
                         vseafloor=energy_results['vseafloor'],
                         dispersion=atmospheric_entry_effects['dispersion'], 
                         energy_seafloor=energy_results['energy_seafloor'],
-                        )
-    context["mratio"] = crater_results['mratio']   
+                        ))
     
     qCrater = atmospheric_entry_effects['altitudeBurst'] <= 0
-    context["airblast_radii"] = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, crater_results['CraterRadiusFinal'])
+    context["airblast_radii"] = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, context['CraterRadiusFinal'])
     context.update(impact.air_blast(energy_results['energy_blast'], dist, atmospheric_entry_effects['altitudeBurst']))
 
     context["lost_energy_joules"] = impact.calculate_lost_energy(energy_results['mass'], vkm, atmospheric_entry_effects["residual_velocity"])
     context["dispersion_ellipse"] = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)
 
     context.update(impact.find_thermal(energy_results['energy_surface'], energy_results['energy_megatons']))
-    context["ejecta_radii"] = impact.find_ejecta(crater_results['Dtr'], crater_results['CraterRadiusTransient'], crater_results['CraterRadiusFinal'])
+    context["ejecta_radii"] = impact.find_ejecta(context['Dtr'], context['CraterRadiusTransient'], context['CraterRadiusFinal'])
 
     ### If at least Mercalli intensity III is reached, add the option to plot seismic shaking intensity
-    context["seismic_radii"] = impact.find_seismic(energy_results['energy_seafloor'], crater_results['CraterRadiusFinal']   )
+    context["seismic_radii"] = impact.find_seismic(energy_results['energy_seafloor'], context['CraterRadiusFinal']   )
 
     if depth_meters > 0:
-        context["tsunami_radii"] = impact.find_tsunami(depth_meters, crater_results['wdiameter'], crater_results['CraterRadiusFinal'])
+        context["tsunami_radii"] = impact.find_tsunami(depth_meters, context['wdiameter'], context['CraterRadiusFinal'])
     
     return render_template('map.html', **context)
 

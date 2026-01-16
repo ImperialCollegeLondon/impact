@@ -90,6 +90,12 @@
         var tsunamiLayer = add_tsunami(loc, tsunamiRadii, map);
         layer_controls["Tsunami"] = tsunamiLayer;
     }
+    
+    var craterRadii = [ {{CraterRadiusFinal}}, {{CraterRadiusTransient}} ];
+    var craterLayer = add_crater(loc, craterRadii, map);
+    layer_controls["Crater"] = craterLayer;
+
+    airblastLayer.addTo(map);
     L.control.layers(null, layer_controls).addTo(map);
 
 {% endif %}

@@ -15,7 +15,7 @@
 
 	<dl class="location">
 		<dt><input type="radio" id="distance" name="input_method" value="distance" checked>
-		<label for="distance">Distance (no map)</label></dt>
+		<label for="distance">Distance only (no map)</label></dt>
 		<dd>
 	<input type="text" name="distance" size=10>
 	<select name="distanceUnits">
@@ -25,7 +25,9 @@
 		<dt><input type="radio" id="latlon" name="input_method" value="latlon">
 		<label for="latlon">Latitude/Longitude</label></dt>
 		<dd>
-		Latitude: <input type="text" name="latitude" size=10> and Longitude: <input type="text" name="longitude" size=10>
+		Latitude: <input type="text" name="latitude" id="latitude" size=10> 
+		Longitude: <input type="text" name="longitude" id="longitude" size=10>
+		<div id="map" style="width: 300px; height: 200px; border: 1px solid #ccc;"></div>
 		</dd>
 		<dt>
 		<input type="radio" id="location" name="input_method" value="location">
@@ -34,7 +36,7 @@
 			<select name="LocationSelect">
 	  <option value="0">Select a location
     {% for location in locations %}
-        <option>{{ location }}</option>
+		<option value="{{ location.lat }},{{ location.long }}">{{ location.name }}</option>
     {% endfor %}
 	</select></dd>
 		<dt>
@@ -139,5 +141,62 @@
     
     <hr>
     <br>
-    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-o9N1jRVv6GkF4v1zGk9MTT2VQmA1p2U5hKk9gA+0Xjk="
+		crossorigin=""></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-sA+e2tF6nN1j7kwhzFZp1kQG5Qp1p5l5v0w1l5Qp1p5l="
+		crossorigin=""/>
+	<script>
+		var map = L.map('map').setView([20, 0], 2);
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: '© OpenStreetMap contributors'
+		}).addTo(map);
+
+		var marker;
+		map.on('click', function(e) {
+			var lat = e.latlng.lat.toFixed(6);
+			var lon = e.latlng.lng.toFixed(6);
+			document.getElementById('latitude').value = lat;
+			document.getElementById('longitude').value = lon;
+			if (marker) {
+				marker.setLatLng(e.latlng);
+			} else {
+				marker = L.marker(e.latlng).addTo(map);
+			}
+		});
+		// Update map view when latitude or longitude input changes
+		function updateMapView() {
+			var lat = parseFloat(document.getElementById('latitude').value);
+			var lon = parseFloat(document.getElementById('longitude').value);
+			if (!isNaN(lat) && !isNaN(lon)) {
+				map.setView([lat, lon], map.getZoom());
+				if (marker) {
+					marker.setLatLng([lat, lon]);
+				} else {
+					marker = L.marker([lat, lon]).addTo(map);
+				}
+			}
+		}
+		document.getElementById('latitude').addEventListener('change', updateMapView);
+		document.getElementById('longitude').addEventListener('change', updateMapView);
+
+		// Update latitude and longitude when LocationSelect changes
+		document.getElementsByName('LocationSelect')[0].addEventListener('change', function() {
+			var selectedIndex = this.selectedIndex;
+			// Skip the first option (placeholder)
+			
+			if (selectedIndex > 0) {
+				var coords = this.value.split(",");
+				if (coords.length === 2) {
+					loc = { lat: coords[0], lon: coords[1] };
+				}
+				if (loc && loc.lat !== undefined && loc.lon !== undefined) {
+					document.getElementById('latitude').value = loc.lat;
+					document.getElementById('longitude').value = loc.lon;
+					updateMapView();
+				}
+			}
+		});
+	</script>
 {% endblock %}

@@ -1,4 +1,5 @@
 import math
+from collections import namedtuple
 
 EARTH_RADIUS_KM = 6371.0
 EARTH_ANGULAR_MOMENTUM = 5.86 * 10**33;		# (kg m^3)/sec
@@ -12,6 +13,20 @@ DRAG_COEFFICIENT = 2	# drag coefficient
 MELT_COEFFICIENT = 8.9 * 10**-21		# coefficient for melt volume calc
 SCALE_HEIGHT = 8000			# scale height of atmosphere in m
 PO = 10**5;				# ambient pressure in Pa
+
+def get_cities():
+    City = namedtuple('City', ['name', 'lat', 'long'])
+    cities = [
+        City("London", 51.5, -0.125),
+        City("Los Angeles", 34.052, -118.244),
+        City("New York", 40.767, -73.975),
+        City("Berlin", 52.525, 13.4114),
+        City("Paris", 48.86, 2.35),
+        City("Johannesburg", -26.201, 28.045),
+        City("Sydney", -33.864, 151.193),
+    ]
+    return cities
+
 
 def get_location(params):
     # Extract parameters
