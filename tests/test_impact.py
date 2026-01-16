@@ -221,3 +221,13 @@ def test_seismic_radius():
         CraterRadiusFinal=1000
     )
     assert radius > 0
+
+def test_tsunami_radius():
+    radius = flask_app.impact.tsunami_radius(
+        Rmax=1000,
+        Rexp=2,
+        A=10,
+        Amax=50,
+        CraterRadiusFinal=300
+    )
+    assert radius > 0

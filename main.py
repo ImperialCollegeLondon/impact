@@ -122,7 +122,10 @@ def map_page():
 
     ### If at least Mercalli intensity III is reached, add the option to plot seismic shaking intensity
     context["seismic_radii"] = impact.find_seismic(energy_results['energy_seafloor'], crater_results['CraterRadiusFinal']   )
-    print(context["seismic_radii"])
+
+    if depth_meters > 0:
+        context["tsunami_radii"] = impact.find_tsunami(depth_meters, crater_results['wdiameter'], crater_results['CraterRadiusFinal'])
+    
     return render_template('map.html', **context)
 
 

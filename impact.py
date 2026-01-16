@@ -272,6 +272,7 @@ def find_crater(
 
     anglefac = math.sin(theta * math.pi / 180) ** (1 / 3)
 
+    wdiameter = None
     if depth != 0:
         # calculate crater in water using Cd = 1.88 and beta = 0.22
         wdiameter = 1.88 * (mass / target_density) ** (1 / 3) * \
@@ -325,6 +326,7 @@ def find_crater(
         'CraterRadiusTransient': CraterRadiusTransient,
         'Dtr': Dtr,
         'mratio': mratio,
+        'wdiameter': wdiameter,
     }
 
 
@@ -603,3 +605,43 @@ def seismic_radius(mag, mag_eff, CraterRadiusFinal):
     if radius > 0.5 * math.pi:
         radius = CraterRadiusFinal
     return radius
+
+
+def tsunami_radius(Rmax, Amax, Rexp, A, CraterRadiusFinal):
+    radius = (Rmax / EARTH_RADIUS_KM) * (Amax / A) ** Rexp
+    if radius > 0.5 * math.pi:
+        radius = CraterRadiusFinal
+    return radius
+
+
+def find_tsunami(depth, wdiameter, CraterRadiusFinal):
+    RimWaveExponent = 1.0
+    MaxWaveRadius = 0.001 * wdiameter
+
+    MaxWaveAmplitude = min(0.07 * wdiameter, depth)
+    Radius1mTsunami = Radius10mTsunami = Radius100mTsunami = Radius1kmTsunami = 0
+
+    if MaxWaveAmplitude > 1:
+      Radius1mTsunami = tsunami_radius(MaxWaveRadius, MaxWaveAmplitude, RimWaveExponent, 1, CraterRadiusFinal)
+    if MaxWaveAmplitude > 10:
+      Radius10mTsunami = tsunami_radius(MaxWaveRadius, MaxWaveAmplitude, RimWaveExponent, 10, CraterRadiusFinal)
+    if MaxWaveAmplitude > 100:
+      Radius100mTsunami = tsunami_radius(MaxWaveRadius, MaxWaveAmplitude, RimWaveExponent, 100, CraterRadiusFinal)
+    if MaxWaveAmplitude > 1000:
+      Radius1kmTsunami = tsunami_radius(MaxWaveRadius, MaxWaveAmplitude, RimWaveExponent, 1000, CraterRadiusFinal)
+
+    # Uncomment and adapt if collapse wave correction is needed
+    # shallowness = pdiameter / depth
+    # if shallowness < 0.5:
+    #     CollapseWaveExponent = 3.0 * math.exp(-0.8 * shallowness)
+    #     CollapseWaveRadius = 0.0025 * wdiameter
+    #     MaxCollapseWaveAmplitude = 0.06 * min_val(wdiameter / 2.828, depth)
+    #     CollapseWaveAmplitude = MaxCollapseWaveAmplitude * (CollapseWaveRadius / distance) ** CollapseWaveExponent
+    #     WaveAmplitudeLowerLimit = min_val(CollapseWaveAmplitude, WaveAmplitudeLowerLimit)
+
+    return [
+      (1, Radius1mTsunami),
+      (10, Radius10mTsunami),
+      (100, Radius100mTsunami),
+      (1000, Radius1kmTsunami)
+    ]

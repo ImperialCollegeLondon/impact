@@ -52,12 +52,15 @@
     marker.bindPopup("Impact Location").openPopup();
     map.setView(loc, 10);
 
+    var layer_controls = {};
+
     var airblastLayer = add_airblast(loc, airblastRadii, map);
-    //L.control.layers(null, { "Airblast": airblastLayer }).addTo(map);
+    layer_controls["Airblast"] = airblastLayer;
 
     var fireballRadii = [ {{RadiusFireball}}, {{RadiusClothingIgnition}}, {{RadiusVisibleFireball}} ];
 
     var fireballLayer = add_fireball(loc, fireballRadii, map);
+    layer_controls["Fireball"] = fireballLayer;
 
     var ejectaRadii = [
         {% for radius in ejecta_radii %}
@@ -65,6 +68,7 @@
         {% endfor %}
     ];
     var ejectaLayer = add_ejecta(loc, ejectaRadii, map);
+    layer_controls["Ejecta"] = ejectaLayer;
 
     var seismicRadii = [
         {% for radius in seismic_radii %}
@@ -73,12 +77,21 @@
     ];   
     
     var seismicLayer = add_seismic(loc, seismicRadii, map);
+    layer_controls["Seismic"] = seismicLayer;
 
-    L.control.layers(null, {"Airblast": airblastLayer, 
-                            "Fireball": fireballLayer,
-                            "Ejecta": ejectaLayer,
-                            "Seismic": seismicLayer  }).addTo(map);
+    var tsunamiRadii = [
+        {% for radius in tsunami_radii %}
+            [{{ radius[0] }},{{radius[1]}}]{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];   
     
-    {% endif %}
+    if (tsunamiRadii.length > 0)
+    {
+        var tsunamiLayer = add_tsunami(loc, tsunamiRadii, map);
+        layer_controls["Tsunami"] = tsunamiLayer;
+    }
+    L.control.layers(null, layer_controls).addTo(map);
+
+{% endif %}
 </script>
 {% endblock %}

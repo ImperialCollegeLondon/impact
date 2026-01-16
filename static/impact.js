@@ -123,3 +123,38 @@ function add_seismic(groundzero, seismicRadii, map ) {
     });
     return seismicLayer;
 }
+
+
+function add_tsunami(groundzero, tsunamiRadii, map ) {
+        var label_T = ["Tsunami wave height > 1 m", 
+            "Tsunami wave height > 10 m",
+            "Tsunami wave height > 100 m",
+            "Tsunami wave height > 1 km"];
+
+    var tsunamiLayer = L.layerGroup();
+    tsunamiLayer.addTo(map);
+
+    tsunamiRadii.forEach(function(radius, idx) {
+        var tsunamiCircle = L.circle(groundzero, {
+            radius: radius[1]*1.274E7*0.5,
+            color: 'cyan',
+            fillColor: 'cyan',
+            fillOpacity: 0.25,
+            weight: 1
+        })
+
+        tsunamiCircle.on('mouseover', function (e) {
+            var popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent(label_T[idx] + ": " + (radius[1]*1.274E7*0.5).toLocaleString() + " meters")
+                .openOn(map);
+        }
+        );
+        tsunamiCircle.on('mouseout', function (e) {
+            map.closePopup();
+        });
+
+        tsunamiLayer.addLayer(tsunamiCircle);
+    });
+    return tsunamiLayer;
+}
