@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Map{% endblock %}
 {% block content %}
-<h2>Interactive Map</h2>
+<p class="note">Please note: the results below are estimates based on current (limited) 
+    understanding of the impact process and come with large uncertainties; 
+    they should be used with caution, particularly in the case of peculiar 
+    input parameters. All values are given to three significant figures 
+    but this does not reflect the precision of the estimate. For more 
+    information about the uncertainty associated with our calculations and 
+    a full discussion of this program, please refer to the 
+    <a href="static/effects.pdf">Earth Impact Effects Program</a> publication.</p>
 <div id="map" style="height: 500px;"></div>
 
 <dl>
@@ -50,7 +57,6 @@
 
     var marker = L.marker(loc).addTo(map);
     marker.bindPopup("Impact Location").openPopup();
-    map.setView(loc, 10);
 
     var layer_controls = {};
 
@@ -97,6 +103,24 @@
 
     airblastLayer.addTo(map);
     L.control.layers(null, layer_controls).addTo(map);
+
+    map.setView(loc, 10);
+    var allRadii = [].concat(
+        airblastRadii,
+        fireballRadii,
+        craterRadii,
+        ejectaRadii.map(r => r[0]),
+        seismicRadii.map(r => r[0]),
+        tsunamiRadii.map(r => r[0])
+    );
+    var maxRadius = Math.max.apply(null, allRadii);
+    if (maxRadius > 0) {
+        var circleBounds = [
+            [loc[0] - maxRadius / 111.32, loc[1] - (maxRadius / (111.32 * Math.cos(loc[0] * Math.PI / 180)))],
+            [loc[0] + maxRadius / 111.32, loc[1] + (maxRadius / (111.32 * Math.cos(loc[0] * Math.PI / 180)))]
+        ];
+        map.fitBounds(circleBounds, {padding: [20, 20]});
+    }
 
 {% endif %}
 </script>
