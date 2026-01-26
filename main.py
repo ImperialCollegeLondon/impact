@@ -10,7 +10,6 @@ def index():
 
 @app.route('/ImpactEffects')
 def impact_effects():
-    craters = ["Acraman (Australia)", "Araguainha (Brazil)", "Barringer (USA)", "Chicxulub (Mexico)", "Chesapeake Bay (USA)", "Eltanin (Bellingshausen Sea)", "Popiagai (Russia)", "Ries (Germany)", "Siljan (Sweden)", "Sudbury (Canada)", "Vredefort (South Africa)"]
     density = {
         "1000": "1000 kg/m^3 for ice",
         "1500": "1500 kg/m^3 for porous rock",
@@ -51,7 +50,8 @@ def impact_effects():
         "14000": "Chicxulub (14 km)"
     }
     return render_template('ImpactEffects.html', 
-                           locations=impact.get_cities(), craters=sorted(craters), pdens_options=density.items(), diameter_options=diameter_options.items())
+                           locations=impact.get_cities(), 
+                           craters=impact.get_craters(), pdens_options=density.items(), diameter_options=diameter_options.items())
 
 
 @app.route('/map')
@@ -126,7 +126,13 @@ def map_page():
     
     return render_template('map.html', **context)
 
+@app.route('/examples')
+def examples():
+    return render_template('examples.html')
 
+@app.route('/craterexp')
+def craterexp():
+    return render_template('craterexp.html')
 
 if __name__ == '__main__':
     app.jinja_env.filters['duration'] = formatters.format_duration

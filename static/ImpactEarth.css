@@ -108,7 +108,7 @@ h3 {
     font-size: 16pt;
     color: #000000;
 }
-li {
+ul {
     margin: 20px;
     list-style-type: none;
 }
@@ -185,5 +185,47 @@ dl.location  {
 #map {
     height: 500px; /* Set the height of the map */
     width: 100%;   /* Set the width of the map */
+    margin-top: 1rem;
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 2rem;
+}
+.example-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.example-card h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+.example-card dl {
+    margin: 0;
+}
+.example-card dd {
+    margin-left: 0;
+    margin-bottom: 0.5em;
+}
+.mercalli {
+    font-weight: bold;
+    color: #09405a;
+}
+.mercalli-explanation dd {
+    margin-bottom: 10px;
+}
+ul.damage {
+    list-style-type: disc;
+}
+.note {
+    font-style: italic;
+    font-size: small;
+    color: #555555;
     margin-top: 1rem;
 }

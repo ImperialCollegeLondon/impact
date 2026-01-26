@@ -27,6 +27,22 @@ def get_cities():
     ]
     return cities
 
+def get_craters():
+    Crater = namedtuple('Crater', ['name', 'lat', 'long'])
+    craters = [
+        Crater("Acraman (Australia)", -32.0173, 135.45),
+        Crater("Araguainha (Brazil)", -16.783, -52.983),
+        Crater("Barringer (USA)", 35.0272, -111.0228),
+        Crater("Chicxulub (Mexico)", 21.3, -89.5),
+        Crater("Chesapeake Bay (USA)", 37.283, -76.017),
+        Crater("Eltanin (Bellingshausen Sea)", -57.787, -90.793),
+        Crater("Popiagai (Russia)", 71.65, 111.1833),
+        Crater("Ries (Germany)", 48.883, 10.617),
+        Crater("Siljan (Sweden)", 61.0333, 14.87),
+        Crater("Sudbury (Canada)", 46.6, -81.18),
+        Crater("Vredefort (South Africa)", -27.0, 27.5),
+    ]
+    return craters
 
 def get_location(params):
     # Extract parameters
