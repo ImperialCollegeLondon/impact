@@ -64,9 +64,13 @@ def map_page():
         density = float(request.args.get('pdens', ''))
     except ValueError:
         density = float(request.args.get('pdens_select', '0'))
+
+    target_type = request.args.get('target_type', 'sedimentary')
+    target_density=impact.target_density(target_type)
     context = dict(location=impact.get_location(request.args), 
                    density=density, 
-                   target_density=request.args.get('tdens', '2500'),
+                   target_type=target_type,
+                   target_density=target_density,
                    distance_km=dist)
 
     diameter_meters = impact.get_impactor_diameter(request.args)
@@ -100,7 +104,7 @@ def map_page():
     context.update(impact.find_crater(theta=theta, 
                         depth=depth_meters,
                         mass=energy_results['mass'], 
-                        target_density=float(request.args.get('tdens', '2500')),
+                        target_density=target_density,
                         pdiameter=diameter_meters,
                         velocity=vkm,
                         vseafloor=energy_results['vseafloor'],

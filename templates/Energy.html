@@ -3,12 +3,12 @@
     <h2>Energy:</h2>
     </dt>
     <dd>
-    Energy before atmospheric entry: {{ "{:.2e}".format(energy_joules) }} Joules 
+    Energy before atmospheric entry: {{ energy_joules | scientific | safe }} Joules 
     {% set megatons = energy_joules / 4.184e15 %}
     {% if megatons < 1 %}
-        = {{ "{:.2e}".format(energy_joules / 4.184e12) + " Kilotons" }} of TNT
+        = {{ (megatons * 1000) | scientific | safe }} KiloTons TNT
     {% else %}
-        = {{ "{:.2e}".format(megatons) + " Megatons" }} of TNT
+        = {{ megatons | scientific | safe }} MegaTons TNT
     {% endif %}
     </dd>
     {% if rec_time_years > 1000 %}

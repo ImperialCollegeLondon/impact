@@ -393,8 +393,8 @@ def atmospheric_entry(pdensity, pdiameter, theta, vInput):
         altitudeBU = altitude1 - omega * SCALE_HEIGHT
         vBU = vInput * 1000 * math.exp(-av * math.exp(-altitudeBU / SCALE_HEIGHT))
 
-        vFac = 1.5 * math.sqrt(DRAG_COEFFICIENT * RHO_SURFACE / (2 * pdensity)) * math.exp(-altitudeBU / (2 * SCALE_HEIGHT))
-        lDisper = pdiameter * math.sin(theta * math.pi / 180) * math.sqrt(pdensity / (2 * DRAG_COEFFICIENT * RHO_SURFACE)) * math.exp(altitudeBU / (2 * SCALE_HEIGHT))
+        vFac = 0.75 * math.sqrt(DRAG_COEFFICIENT * RHO_SURFACE / pdensity) * math.exp(-altitudeBU / (2 * SCALE_HEIGHT))
+        lDisper = pdiameter * math.sin(theta * math.pi / 180) * math.sqrt(pdensity / (DRAG_COEFFICIENT * RHO_SURFACE)) * math.exp(altitudeBU / (2 * SCALE_HEIGHT))
 
         alpha2 = math.sqrt(PANCAKE_FACTOR ** 2 - 1)
         altitudePen = 2 * SCALE_HEIGHT * math.log(1 + alpha2 * lDisper / (2 * SCALE_HEIGHT))
@@ -676,3 +676,9 @@ def find_tsunami(depth, wdiameter, CraterRadiusFinal):
       (100, Radius100mTsunami),
       (1000, Radius1kmTsunami)
     ]
+
+def target_density(target_type):
+    return {
+        'water': 1000,
+        'sedimentary': 2500,
+        'crystalline': 2700}.get(target_type, 2500) 

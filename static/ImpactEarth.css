@@ -237,3 +237,9 @@ ul.damage {
         font-style: italic;
     }
 }
+div.target-type {
+    margin-left: 40px;
+    input {
+        margin-top: 10px;
+    }
+}

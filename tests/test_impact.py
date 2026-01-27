@@ -50,14 +50,26 @@ def test_atmospheric_entry():
         vInput=20
     )
     assert 'residual_velocity' in results
-    assert pytest.approx(2.49, rel=0.01) == results['residual_velocity']
+    assert pytest.approx(7.742, rel=0.01) == results['residual_velocity']
 
     assert 'altitudeBurst' in results
-    assert pytest.approx(2273, rel=0.1) == results['altitudeBurst']
+    assert pytest.approx(-3114.06, rel=0.1) == results['altitudeBurst']
     assert results['altitudeBurst'] 
 
     assert 'dispersion' in results
-    assert results['dispersion'] == 0
+    assert pytest.approx(576.037, rel=0.1) == results['dispersion']
+
+
+def test_velocity_after_burst():
+    results = flask_app.impact.atmospheric_entry(
+        pdensity=1000,
+        pdiameter=320,
+        theta=45,
+        vInput=50
+    )
+    assert 'residual_velocity' in results
+    assert pytest.approx(36.4, rel=0.01) == results['residual_velocity']
+
 
 def test_mratio_display():
     test_data_dir = Path(__file__).parent.parent / "templates"
@@ -89,12 +101,14 @@ def test_energy_display():
         'rec_time_years': 20,
     }
 
-    rendered = jinja2.Environment(
+    env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(test_data_dir)
-    ).get_template("Energy.html").render(context)
+    )
+    env.filters['scientific'] = lambda v: v  # simple filter for testing
+    rendered = env.get_template("Energy.html").render(context)
 
-    assert "Energy before atmospheric entry: 1.00e+09 Joules" in rendered
-    assert " = 2.39e-04 Kilotons of TNT" in rendered
+    assert "Energy before atmospheric entry: 1000000000.0 Joules" in rendered
+    assert " = 0.00023900573613766732 KiloTons TNT" in rendered
     assert "The average interval between impacts of this size somewhere on Earth is" in rendered
     assert "<b>20.0 years.</b>" in rendered
 

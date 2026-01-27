@@ -102,24 +102,18 @@
       </blockquote>
       
       <h3 align=left>Target Parameters</h3>
-      <blockquote>
-	Target Type
-	<br>
-	<blockquote>
-	  <input type="radio" name="tdens" value ="1000">Water
-	  of depth:  <input type="text" name="wdepth" size=10>
+	<div class="target-type">
+	  <p>Target Type</p>
+	  <input type="radio" name="target_type" value ="water">Water of depth:  <input type="text" name="wdepth" size=10>
 	  <select name="wdepthUnits">
 	    <option>meters
 	    <option>feet
-	  </select>
+	  </select><br>
+	  <input type="radio" name="target_type" value ="sedimentary">Sedimentary Rock
 	  <br>
-	  <input type="radio" name="tdens" value ="2500">Sedimentary Rock
+	  <input type="radio" name="target_type" value ="crystalline">Crystalline Rock
 	  <br>
-	  <input type="radio" name="tdens" value ="2750">Crystalline Rock
-	  <br>
-      
-	</blockquote>
-      </blockquote>
+	  </div>
           <p>
     <div align="center">
   	  <input type="submit" value="Display Impact Effects">
