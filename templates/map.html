@@ -9,12 +9,14 @@
     information about the uncertainty associated with our calculations and 
     a full discussion of this program, please refer to the 
     <a href="static/effects.pdf">Earth Impact Effects Program</a> publication.</p>
-<div id="map" style="height: 500px;"></div>
 
+    {% if distance_km == 0 %}
+        <div id="map"></div>
+    {% endif %}
 <dl>
     <dt><h2>Your Inputs:</h2></dt>
     {% if distance_km > 0 %}
-    <dd>Distance from Impact: <b>{{ distance_km }} meters ( = {{ (distance_km * 0.000621371) | round(2) }} miles )</b></dd>
+    <dd>Distance from Impact: <b>{{ distance_km }} km ( = {{ (distance_km * 0.621371) | round(2) }} miles )</b></dd>
     {% endif %}
     <dd>Projectile diameter: <b>{{ diameter_meters }} meters ( = {{ (diameter_meters * 3.28084) | round(2) }} feet )</b></dd>
     <dd>Projectile Density: <b>{{ density }} kg/m<sup>3</sup></b></dd>
@@ -34,7 +36,9 @@
     {% include "Energy.html" %}
     {% include "MajorGlobalChanges.html" %}
     {% include "AtmosphericEntry.html" %}
-    {% include "AirBlast.html" %}
+    {% if distance_km > 0 %}
+        {% include "AirBlast.html" %}
+    {% endif %}
 <script>
     var map = L.map('map').setView([0, 0], 2);
     var airblastRadii = [

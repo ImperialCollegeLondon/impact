@@ -110,7 +110,9 @@ def map_page():
     
     qCrater = atmospheric_entry_effects['altitudeBurst'] <= 0
     context["airblast_radii"] = impact.find_airblast(energy_results['energy_blast'], atmospheric_entry_effects['altitudeBurst'], qCrater, context['CraterRadiusFinal'])
-    context.update(impact.air_blast(energy_results['energy_blast'], dist, atmospheric_entry_effects['altitudeBurst']))
+
+    if dist > 0:
+        context.update(impact.air_blast(energy_results['energy_blast'], dist, atmospheric_entry_effects['altitudeBurst']))
 
     context["lost_energy_joules"] = impact.calculate_lost_energy(energy_results['mass'], vkm, atmospheric_entry_effects["residual_velocity"])
     context["dispersion_ellipse"] = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)

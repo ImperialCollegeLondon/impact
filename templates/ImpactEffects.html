@@ -36,11 +36,11 @@
 
 		<dd>
 	</dd>
-		<dt><input type="checkbox" id="distance" name="input_method" value="distance">
+		<dt><input type="checkbox" id="distanceonly" name="input_method" value="distanceonly">
 		<label for="distance">Effects at distance only (no map)</label></dt>
 		<dd>
-	<input type="text" name="distance" size=10>
-	<select name="distanceUnits">
+	<input type="text" name="distance" size=10 disabled>
+	<select name="distanceUnits" disabled>
 		<option>km</option>
 		<option>miles</option>
 	</select>
@@ -121,90 +121,35 @@
 	</blockquote>
       </blockquote>
           <p>
-      <br>
-      <br>
-      <br>
-            <center>
-	<input type="submit" value="Display Impact Effects">
-	<input type="reset" value="Reset Form">
-      </center>
+    <div align="center">
+  	  <input type="submit" value="Display Impact Effects">
+	  <input type="reset" value="Reset Form">
+	</div>
     </form>
 
-      <a target="_blank" href="http://www.lpl.arizona.edu/~marcus/effects.pdf">Tell me more...</a>
-    <p>Click here for a pdf document that details the observations, assumptions, and equations upon which this program is based.  It describes our approach to quantifying the important impact processes that might affect the people, buildings, and landscape in the vicinity of an impact event and discusses the uncertainty in our predictions.  The processes included are:  atmospheric entry, impact crater formation, fireball expansion and thermal radiation, ejecta deposition, seismic shaking, and the propagation of the atmospheric blast wave.</p>
-    
-    
-    
-    <hr>
-    <br>
+	<div class="discussion">
+	<h3>Tell me more...</h3>	
+	<p>
+    Read the <a href="static/effects.pdf">Earth Impact Effects Program</a> publication
+	</p>
+    <p>This paper details the observations, assumptions, and equations upon 
+		which this program is based.  It describes our approach to quantifying 
+		the important impact processes that might affect the people, buildings, 
+		and landscape in the vicinity of an impact event and discusses the 
+		uncertainty in our predictions.  The processes included are:  
+		atmospheric entry, impact crater formation, fireball expansion and 
+		thermal radiation, ejecta deposition, seismic shaking, and the 
+		propagation of the atmospheric blast wave.</p>
+
+	<p>Recent improvements in the airblast calculation are described in
+		<a target="_blank" href="http://dx.doi.org/10.1111/maps.12873">A numerical assessment of simple airblast models of impact airbursts</a>.</p>
+	</div>	
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
 		integrity="sha256-o9N1jRVv6GkF4v1zGk9MTT2VQmA1p2U5hKk9gA+0Xjk="
 		crossorigin=""></script>
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 		integrity="sha256-sA+e2tF6nN1j7kwhzFZp1kQG5Qp1p5l5v0w1l5Qp1p5l="
 		crossorigin=""/>
-	<script>
-		var map = L.map('map').setView([20, 0], 2);
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			attribution: '© OpenStreetMap contributors'
-		}).addTo(map);
-
-		var marker;
-		map.on('click', function(e) {
-			var lat = e.latlng.lat.toFixed(6);
-			var lon = e.latlng.lng.toFixed(6);
-			document.getElementById('latitude').value = lat;
-			document.getElementById('longitude').value = lon;
-			if (marker) {
-				marker.setLatLng(e.latlng);
-			} else {
-				marker = L.marker(e.latlng).addTo(map);
-			}
-		});
-		// Update map view when latitude or longitude input changes
-		function updateMapView() {
-			var lat = parseFloat(document.getElementById('latitude').value);
-			var lon = parseFloat(document.getElementById('longitude').value);
-			if (!isNaN(lat) && !isNaN(lon)) {
-				map.setView([lat, lon], map.getZoom());
-				if (marker) {
-					marker.setLatLng([lat, lon]);
-				} else {
-					marker = L.marker([lat, lon]).addTo(map);
-				}
-			}
-		}
-		document.getElementById('latitude').addEventListener('change', updateMapView);
-		document.getElementById('longitude').addEventListener('change', updateMapView);
-
-		// Update latitude and longitude when LocationSelect changes
-		Array.from(document.getElementsByClassName('specificLocation')).forEach(function(select) {
-			select.addEventListener('change', function() {
-				var selectedIndex = this.selectedIndex;
-				// Skip the first option (placeholder)
-				if (selectedIndex > 0) {
-					var coords = this.value.split(",");
-					if (coords.length === 2) {
-						var loc = { lat: coords[0], lon: coords[1] };
-						if (loc.lat !== undefined && loc.lon !== undefined) {
-							document.getElementById('latitude').value = loc.lat;
-							document.getElementById('longitude').value = loc.lon;
-							updateMapView();
-						}
-					}
-				}
-			});
-		});
-		// Enable/disable location selectors based on "distance only" checkbox
-		document.getElementById('distance').addEventListener('change', function() {
-			var disabled = this.checked;
-			Array.from(document.getElementsByClassName('specificLocation')).forEach(function(select) {
-				select.disabled = disabled;
-			});
-			document.getElementById('latitude').disabled = disabled;
-			document.getElementById('longitude').disabled = disabled;
-			document.getElementById('map').style.pointerEvents = disabled ? 'none' : 'auto';
-			document.getElementById('map').style.opacity = disabled ? '0.5' : '1';
-		});
-	</script>
+	<script src="{{ url_for('static', filename='location.js') }}"></script>			
+		
 {% endblock %}
