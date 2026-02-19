@@ -29,7 +29,9 @@
 	</select>
 		<div id="map" style="width: 300px; height: 200px; border: 1px solid #ccc;"></div>
 		Lat: <input type="text" name="latitude" id="latitude" size=10> 
-		Long: <input type="text" name="longitude" id="longitude" size=10>		</dd>
+		Long: <input type="text" name="longitude" id="longitude" size=10><br>
+		<span id="latlong-error" class="error"></span>
+	</dd>
 
 		<dd>
 			</dd>
@@ -44,6 +46,7 @@
 		<option>km</option>
 		<option>miles</option>
 	</select>
+	<span id="distance-error" class="error"></span>
 	</dd>
 	</dl>
 
@@ -58,86 +61,88 @@
       <h3 align=left>Projectile Parameters</h3>
       <blockquote>
 	Projectile Diameter
-	<input type="text" name="diam" size=10>
+	<input type="text" name="diam" id="diameter" size=10>
 	<select name="diameterUnits">
 	  <option>m
 	  <option>km
 	  <option>ft
 	  <option>miles
 	</select>
-	<select name="diameterSelect">
+	<select name="diameterSelect" id="diameterSelect">
 		<option value="">Select a template</option>
 		{% for value, label in diameter_options %}
 			<option value="{{ value }}">{{ label }}</option>
 		{% endfor %}
 	</select>
+	<span id="diameter-error" class="error"></span>
 
 	<br>
 	<p>Projectile Density (in kg/m<sup>3</sup>)
-	  <input type="text" name="pdens" size=10> or
-	  <select name="pdens_select">
+	  <input type="text" name="pdens" id="density" size=10> or
+	  <select name="pdens_select" id="densitySelect">
+		<option value="">Select from a list</option>
         {% for value, label in pdens_options %}
             <option value="{{ value }}">{{ label }}
         {% endfor %}
 	  </select>
+	  <span id="density-error" class="error"></span>
 	  
       </blockquote>
       
       <h3 align=left>Impact Parameters</h3>
       <blockquote>
 	Impact Velocity
-	<input type="text" name="vel" size=10>  <!-- Input for velocity (max 72 km/s)-->
-	<select name="velocityUnits">
+	<input type="text" name="vel" id="vel" size=10>  <!-- Input for velocity (max 72 km/s)-->
+	<select name="velocityUnits" id="velUnits">
 	  
 	  <option value="1">km/s
 	  <option value="2">miles/s
-	</select>
+	</select> or
 	
+	<select name="velocity_select" id="velsel" style="width: 275px;">
+    	<option value="0">Select from a list
+        {% for value, label in velocities %}
+            <option value="{{ value }}">{{ label }}
+        {% endfor %}
+    </select>
+	<span id="velocity-error" class="error"></span>
 	<p>This is the velocity of the projectile before it enters the atmosphere.  The minimum impact velocity on Earth is 11 km/s.  Typical impact velocities are 17 km/s for asteroids and 51 km/s for comets.  The maximum Earth impact velocity for objects orbiting the sun is 72 km/s.
 	  
 	<p>Impact Angle (in degrees)
-	  <input type="text" name="theta" size=10>
-	  
+	<input type="text" name="theta" id="theta" size=10>
+	<select name="angle_select" id="angle_select" style="width: 275px;">
+	<option value="0">Select from a list
+	{% for value, label in angles %}
+		<option value="{{ value }}">{{ label }}
+	{% endfor %}
+    </select>
+	<span id="angle-error" class="error"></span>
 	<p>The impact angle is measured from a plane tangent to the impact surface.  This angle is 90 degrees for a vertical impact.  The most	probable angle of impact is 45 degrees.
       </blockquote>
       
       <h3 align=left>Target Parameters</h3>
 	<div class="target-type">
 	  <p>Target Type</p>
-	  <input type="radio" name="target_type" value ="water">Water of depth:  <input type="text" name="wdepth" size=10>
+	  <input type="radio" name="target_type" value ="water">Water of depth:  <input type="text" name="wdepth" id="depth" size=10>
 	  <select name="wdepthUnits">
 	    <option>meters
 	    <option>feet
-	  </select><br>
-	  <input type="radio" name="target_type" value ="sedimentary">Sedimentary Rock
+	  </select>
+	  <br>
+	  <span id="depth-error" class="error"></span>
+	  <input type="radio" name="target_type" value ="sedimentary" checked>Sedimentary Rock
 	  <br>
 	  <input type="radio" name="target_type" value ="crystalline">Crystalline Rock
 	  <br>
+	  <span id="target-error" class="error"></span>
 	  </div>
           <p>
     <div align="center">
-  	  <input type="submit" value="Display Impact Effects">
+  	  <input type="submit" value="Display Impact Effects" id="submit">
 	  <input type="reset" value="Reset Form">
 	</div>
     </form>
 
-	<div class="discussion">
-	<h3>Tell me more...</h3>	
-	<p>
-    Read the <a href="static/effects.pdf">Earth Impact Effects Program</a> publication
-	</p>
-    <p>This paper details the observations, assumptions, and equations upon 
-		which this program is based.  It describes our approach to quantifying 
-		the important impact processes that might affect the people, buildings, 
-		and landscape in the vicinity of an impact event and discusses the 
-		uncertainty in our predictions.  The processes included are:  
-		atmospheric entry, impact crater formation, fireball expansion and 
-		thermal radiation, ejecta deposition, seismic shaking, and the 
-		propagation of the atmospheric blast wave.</p>
-
-	<p>Recent improvements in the airblast calculation are described in
-		<a target="_blank" href="http://dx.doi.org/10.1111/maps.12873">A numerical assessment of simple airblast models of impact airbursts</a>.</p>
-	</div>	
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
 		integrity="sha256-o9N1jRVv6GkF4v1zGk9MTT2VQmA1p2U5hKk9gA+0Xjk="
 		crossorigin=""></script>

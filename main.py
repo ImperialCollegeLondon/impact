@@ -16,6 +16,20 @@ def impact_effects():
         "3000": "3000 kg/m^3 for dense rock",
         "8000": "8000 kg/m^3 for iron"
     }
+    velocity_options = {
+        "11.2": "Minimum impact velocity (11.2 km/s)",
+        "17": "Typical asteroid impact velocity (17 km/s)",
+        "51": "Typical comet impact velocity (51 km/s)",
+        "72": "Maximum Earth impact velocity (72 km/s)"
+    }
+    angle_options = {
+        "15": "15 degrees (shallowest to form circular crater)",
+        "30": "30 degrees",
+        "45": "45 degrees (most frequent)",
+        "60": "60 degrees",
+        "75": "75 degrees",
+        "90": "90 degrees (vertical)"
+    }
 
     diameter_options = {
         "0.25": "Football (25 cm)",
@@ -51,7 +65,11 @@ def impact_effects():
     }
     return render_template('ImpactEffects.html', 
                            locations=impact.get_cities(), 
-                           craters=impact.get_craters(), pdens_options=density.items(), diameter_options=diameter_options.items())
+                           craters=impact.get_craters(), 
+                           pdens_options=density.items(), 
+                           diameter_options=diameter_options.items(),
+                           velocities=velocity_options.items(),
+                           angles=angle_options.items())
 
 
 @app.route('/map')
@@ -88,12 +106,13 @@ def map_page():
     # Calculate the effects of atmospheric entry
     atmospheric_entry_effects = impact.atmospheric_entry(density, diameter_meters, theta, vkm)
     context.update(atmospheric_entry_effects)
+    residual_velocity = atmospheric_entry_effects['residual_velocity']
 
     energy_results = impact.calc_energy(
         pdiameter=diameter_meters,
         pdensity=density,
         vInput=vkm,
-        velocity=atmospheric_entry_effects['residual_velocity'],
+        velocity=residual_velocity,
         theta=theta,
         depth=depth_meters,
         distance=dist
@@ -106,7 +125,7 @@ def map_page():
                         mass=energy_results['mass'], 
                         target_density=target_density,
                         pdiameter=diameter_meters,
-                        velocity=vkm,
+                        velocity=residual_velocity,
                         vseafloor=energy_results['vseafloor'],
                         dispersion=atmospheric_entry_effects['dispersion'], 
                         energy_seafloor=energy_results['energy_seafloor'],
@@ -119,7 +138,7 @@ def map_page():
         context.update(impact.air_blast(energy_results['energy_blast'], dist, atmospheric_entry_effects['altitudeBurst']))
 
     context["lost_energy_joules"] = impact.calculate_lost_energy(energy_results['mass'], vkm, atmospheric_entry_effects["residual_velocity"])
-    context["dispersion_ellipse"] = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta, distance_km=dist)
+    context["dispersion_ellipse"] = impact.calculate_dispersion_ellipse(atmospheric_entry_effects['dispersion'], theta)
 
     context.update(impact.find_thermal(energy_results['energy_surface'], energy_results['energy_megatons']))
     context["ejecta_radii"] = impact.find_ejecta(context['Dtr'], context['CraterRadiusTransient'], context['CraterRadiusFinal'])
@@ -140,7 +159,26 @@ def examples():
 def craterexp():
     return render_template('craterexp.html')
 
+@app.route('/craterglossary')
+def craterglos():
+    return render_template('craterglos.html')
+
+@app.template_filter('duration')
+def duration_filter(seconds):
+    return formatters.format_duration(seconds)
+
+@app.template_filter('scientific')
+def scientific_filter(value):
+    return formatters.format_scientific(value)
+
+@app.template_filter('sigfigs')
+def sigfigs_filter(value, sigfigs=2):
+    return formatters.format_sig_figs(value, sigfigs)
+
+@app.template_filter('distance')
+def distance_filter(distance, sigfigs=2):   
+    value1, unit1, value2, unit2 = formatters.format_distance(distance, sigfigs)
+    return f"{value1} {unit1} ( = {value2} {unit2} )"   
+
 if __name__ == '__main__':
-    app.jinja_env.filters['duration'] = formatters.format_duration
-    app.jinja_env.filters['scientific'] = formatters.format_scientific
     app.run(debug=True)

@@ -306,7 +306,7 @@ def find_crater(
     wdiameter = None
     if depth != 0:
         # calculate crater in water using Cd = 1.88 and beta = 0.22
-        wdiameter = 1.88 * (mass / target_density) ** (1 / 3) * \
+        wdiameter = 1.88 * ((mass / target_density) ** (1 / 3)) * \
             ((1.61 * G * pdiameter) / (velocity * 1000) ** 2) ** (-0.22)
         wdiameter *= anglefac
         target_density = 2700  # change target density for seafloor crater calculation
@@ -338,9 +338,9 @@ def find_crater(
     vCrater = (math.pi / 24) * (Dtr / 1000) ** 3
     vratio = vCrater / EARTH_VOLUME
 
-    mratio = None
-    mcratio = None
-    vMelt = None
+    mratio = 0
+    mcratio = 0
+    vMelt = 0
 
     if velocity >= 12:
         vMelt = MELT_COEFFICIENT * energy_seafloor * math.sin(theta * math.pi / 180)
@@ -348,6 +348,7 @@ def find_crater(
             vMelt = EARTH_VOLUME
         mratio = vMelt / EARTH_VOLUME
         mcratio = vMelt / vCrater
+    
 
     CraterRadiusFinal = 0.5E-3 * cdiameter / EARTH_RADIUS_KM
     CraterRadiusTransient = 0.5E-3 * Dtr / EARTH_RADIUS_KM
@@ -357,7 +358,12 @@ def find_crater(
         'CraterRadiusTransient': CraterRadiusTransient,
         'Dtr': Dtr,
         'mratio': mratio,
+        'mcratio': mcratio,
         'wdiameter': wdiameter,
+        'cdiameter': cdiameter,
+        'depthfr': depthfr,
+        'vMelt': vMelt,
+        'melt_thickness': vMelt / (math.pi * (Dtr/2000) ** 2) if vMelt else None
     }
 
 
@@ -422,7 +428,7 @@ def atmospheric_entry(pdensity, pdiameter, theta, vInput):
         'altitudeBurst': altitudeBurst,
         'altitudeBU': altitudeBU,
         'dispersion': dispersion,
-        'ifactor': iFactor
+        'iFactor': iFactor
     }
 
 def orbit_impact(pratio):
@@ -447,18 +453,12 @@ def describe_decibels(dec_level):
     else: return "Dangerously Loud"
 
 
-def calculate_dispersion_ellipse(dispersion, theta, distance_km):
-    if dispersion == 0 or distance_km == 0:
+def calculate_dispersion_ellipse(dispersion, theta):
+    if dispersion == 0:
         return (0, 0)
 
-    # Convert dispersion from meters to kilometers
-    dispersion_km = dispersion / 1000.0
-
-    # Calculate semi-major and semi-minor axes
-    semi_major = dispersion_km * math.cos(theta * math.pi / 180) + distance_km * 0.01
-    semi_minor = dispersion_km * math.sin(theta * math.pi / 180) + distance_km * 0.005
-
-    return (semi_major, semi_minor)
+    return(dispersion / (1000 * math.sin(theta * math.pi / 180)),
+           dispersion / 1000)
 
 
 def calculate_lost_energy(mass, entry_vkm, ending_vkm):

@@ -236,10 +236,22 @@ ul.damage {
     h3 {
         font-style: italic;
     }
+    font-size: small;
 }
 div.target-type {
     margin-left: 40px;
     input {
         margin-top: 10px;
     }
+}
+
+.error {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  display: block;
+}
+
+input:invalid {
+  border: 1px solid red;
 }
