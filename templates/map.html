@@ -18,7 +18,7 @@
     {% if distance_km > 0 %}
     <dd>Distance from Impact: <b>{{ distance_km }} km ( = {{ (distance_km * 0.621371) | round(2) }} miles )</b></dd>
     {% endif %}
-    <dd>Projectile diameter: <b>{{ diameter_meters }} meters ( = {{ (diameter_meters * 3.28084) | round(2) }} feet )</b></dd>
+    <dd>Projectile diameter: <b>{{ diameter_meters | distance }} )</b></dd>
     <dd>Projectile Density: <b>{{ density }} kg/m<sup>3</sup></b></dd>
     <dd>Impact Velocity: <b>{{ velocity_km_per_second }} km per second ( = {{ (velocity_km_per_second * 0.621371) | round(2) }} miles per second )</b></dd>
     <dd>Impact Angle: <b>{{ impact_angle }} degrees</b></dd>
@@ -41,6 +41,7 @@
     {% if distance_km > 0 %}
         {% include "AirBlast.html" %}
     {% endif %}
+    {% include "CraterDimensions.html" %}
 <script>
     var map = L.map('map').setView([0, 0], 2);
     var airblastRadii = [
