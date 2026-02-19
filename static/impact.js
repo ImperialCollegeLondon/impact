@@ -15,7 +15,7 @@ function add_airblast(groundzero, airblastRadii, map ) {
         airblastCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_A[idx] + ": " + (radius*1.274E7*0.5).toLocaleString() + " meters")
+                .setContent(label_A[idx] + ": " + formatDistance(radius))
                 .openOn(map);
         });
         airblastCircle.on('mouseout', function (e) {
@@ -43,7 +43,7 @@ function add_fireball(groundzero, fireballRadii, map ) {
         blastCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_F[idx] + ": " + (radius*1.274E7*0.5).toLocaleString() + " meters")
+                .setContent(label_F[idx] + ": " + formatDistance(radius))
                 .openOn(map);
         });
         blastCircle.on('mouseout', function (e) {
@@ -72,7 +72,7 @@ function add_ejecta(groundzero, ejectaRadii, map ) {
         ejectaCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_E[idx] + ": " + (radius[1]*1.274E7*0.5).toLocaleString() + " meters")
+                .setContent(label_E[idx] + ": " + formatDistance(radius))
                 .openOn(map);
         }
         );
@@ -106,7 +106,7 @@ function add_seismic(groundzero, seismicRadii, map ) {
         seismicCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_S[idx] + ": " + (radius[1]*1.274E7*0.5).toLocaleString() + " meters")
+                .setContent(label_S[idx] + ": " + formatDistance(radius))
                 .openOn(map);
         }
         );
@@ -140,7 +140,7 @@ function add_tsunami(groundzero, tsunamiRadii, map ) {
         tsunamiCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_T[idx] + ": " + (radius[1]*1.274E7*0.5).toLocaleString() + " meters")
+                .setContent(label_T[idx] + ": " + formatDistance(radius))
                 .openOn(map);
         }
         );
@@ -170,7 +170,7 @@ function add_crater(groundzero, craterRadii, map ) {
         craterCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_C[idx] + ": " + (radius*1.274E7*0.5).toLocaleString() + " meters")
+                .setContent(label_C[idx] + ": " + formatDistance(radius))
                 .openOn(map);
         }
         );
@@ -183,3 +183,10 @@ function add_crater(groundzero, craterRadii, map ) {
     return craterLayer;
 }
 
+function formatDistance(radius) {
+    const meters = radius * 1.274E7 * 0.5;
+    if (meters >= 1000) {
+        return (meters / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " km";
+    }
+    return meters.toLocaleString() + " meters";
+}
