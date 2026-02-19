@@ -327,6 +327,7 @@ def find_crater(
         # complex crater will be formed, use equation from McKinnon and Schenk (1985)
         cdiameter = (1.17 * Dtr ** 1.13) / (3200 ** 0.13)
         depthfr = 37 * cdiameter ** 0.301
+        brecciaThickness = None
     else:
         # simple crater will be formed
         cdiameter = 1.25 * Dtr  # Diameter of final crater in m
@@ -363,7 +364,8 @@ def find_crater(
         'cdiameter': cdiameter,
         'depthfr': depthfr,
         'vMelt': vMelt,
-        'melt_thickness': vMelt / (math.pi * (Dtr/2000) ** 2) if vMelt else None
+        'melt_thickness': vMelt / (math.pi * (Dtr/2000) ** 2) if vMelt else None,
+        'breccia_thickness': brecciaThickness
     }
 
 
