@@ -20,6 +20,20 @@ def test_calc_energy():
     assert results['vseafloor'] > 0
     assert results['energy_seafloor'] > 0
 
+def test_calc_energy_gets_impact_energy():
+    results = flask_app.impact.calc_energy(
+        pdiameter=320,  # diameter in meters
+        pdensity=1000,  # density in kg/m^3
+        vInput=50,      # initial velocity in km/s
+        velocity=15,    # final velocity in km/s
+        theta=45,       # impact angle in degrees
+        depth=0,
+        distance=1000
+    )
+    assert 'energy_joules' in results
+    assert pytest.approx(2.1e+19, rel=0.1) == results['energy_joules']
+
+
 def test_airblast_radius_crater():
     radius, airblast = flask_app.impact.airblast_radius_crater(1000, 1500, 500, False, 100) 
     assert radius > 0
@@ -41,7 +55,21 @@ def test_find_crater():
     assert crater_results["CraterRadiusFinal"] > 0
     assert crater_results["CraterRadiusTransient"] > 0
    
+def test_find_crater_in_water():
+    crater_results = flask_app.impact.find_crater(
+        theta=45,
+        depth=50,
+        mass=17157284678.805058,
+        target_density=1000,
+        pdiameter=320,
+        velocity=50,
+        vseafloor=10,
+        dispersion=50,
+        energy_seafloor=1e15
+    )
 
+    assert pytest.approx(7732, rel=0.1) == crater_results["wdiameter"]
+   
 def test_atmospheric_entry():
     results = flask_app.impact.atmospheric_entry(
         pdensity=3000,
@@ -117,7 +145,7 @@ def test_atmospheric_entry_display():
 
     # assume it is an unittest function
     context = {  # your variables to pass to template
-        'ifactor': 0.8,
+        'iFactor': 0.8,
         'altitudeBurst': 5000,
         'altitudeBU': 8000,
         'density': 3000,
@@ -162,14 +190,15 @@ def test_orbit_impact():
     assert flask_app.impact.orbit_impact(0.005) == "Noticeable"    
     assert flask_app.impact.orbit_impact(0.05) == "Substantial"
 
+
 def test_calculate_dispersion_ellipse():
     a, b = flask_app.impact.calculate_dispersion_ellipse(
-        dispersion=100,
-        distance_km=20,
+        dispersion=1059,
         theta=45
     )
-    assert a > 0
-    assert b > 0
+    assert pytest.approx(1.5, rel=0.01) == a
+    assert pytest.approx(1.06, rel=0.01) == b
+
 
 def test_calculate_lost_energy():
     lost_energy = flask_app.impact.calculate_lost_energy(
