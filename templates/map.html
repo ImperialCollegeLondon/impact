@@ -62,6 +62,8 @@
     {% if location %}
     var loc = [{{ location[0] }}, {{ location[1] }}];
 
+    L.control.scale({position: 'bottomright', offset: [0, -20] }).addTo(map);
+
     var marker = L.marker(loc).addTo(map);
     marker.bindPopup("Impact Location").openPopup();
 
