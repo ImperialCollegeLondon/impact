@@ -14,22 +14,24 @@
 	<dl class="location">
 		
 	<dd>
-	<select name="CitySelect"  class="specificLocation" style="width: 140px;">
+	<label for="CitySelect">City</label>
+	<select name="CitySelect" id="CitySelect" class="specificLocation" style="width: 140px;">
 	  <option value="0">Select a location
     {% for location in locations %}
 		<option value="{{ location.lat }},{{ location.long }}">{{ location.name }}</option>
     {% endfor %}
 	</select>
 	or
-	<select name="CraterSelect" class="specificLocation" style="width: 140px;">
+	<label for="CraterSelect">Crater</label>
+	<select name="CraterSelect" id="CraterSelect" class="specificLocation" style="width: 140px;">
 	  <option value="0">Select a crater
     {% for location in craters %}
 		<option value="{{ location.lat }},{{ location.long }}">{{ location.name }}</option>
     {% endfor %}
 	</select>
 		<div id="map" style="width: 300px; height: 200px; border: 1px solid #ccc;"></div>
-		Lat: <input type="text" name="latitude" id="latitude" size=10> 
-		Long: <input type="text" name="longitude" id="longitude" size=10><br>
+		<label for="latitude">Lat:</label> <input type="text" name="latitude" id="latitude" size=10> 
+		<label for="longitude">Long:</label> <input type="text" name="longitude" id="longitude" size=10><br>
 		<span id="latlong-error" class="error"></span>
 	</dd>
 
@@ -39,10 +41,12 @@
 		<dd>
 	</dd>
 		<dt><input type="checkbox" id="distanceonly" name="input_method" value="distanceonly">
-		<label for="distance">Effects at distance only (no map)</label></dt>
+		<label for="distanceonly">Effects at distance only (no map)</label></dt>
 		<dd>
-	<input type="text" name="distance" size=10 disabled>
-	<select name="distanceUnits" disabled>
+	<label for="distance">Distance</label>
+	<input type="text" name="distance" id="distance" size=10 disabled>
+	<label for="distanceUnits">Distance units</label>
+	<select name="distanceUnits" id="distanceUnits" disabled>
 		<option>km</option>
 		<option>miles</option>
 	</select>
@@ -60,14 +64,16 @@
       
       <h3 align=left>Projectile Parameters</h3>
       <blockquote>
-	Projectile Diameter
+	<label for="diameter">Projectile Diameter</label>
 	<input type="text" name="diam" id="diameter" size=10>
-	<select name="diameterUnits">
+	<label for="diameterUnits">Diameter units</label>
+	<select name="diameterUnits" id="diameterUnits">
 	  <option>m
 	  <option>km
 	  <option>ft
 	  <option>miles
 	</select>
+	<label for="diameterSelect">Diameter template</label>
 	<select name="diameterSelect" id="diameterSelect">
 		<option value="">Select a template</option>
 		{% for value, label in diameter_options %}
@@ -77,8 +83,9 @@
 	<span id="diameter-error" class="error"></span>
 
 	<br>
-	<p>Projectile Density (in kg/m<sup>3</sup>)
+	<p><label for="density">Projectile Density (in kg/m<sup>3</sup>)</label>
 	  <input type="text" name="pdens" id="density" size=10> or
+	  <label for="densitySelect">Density template</label>
 	  <select name="pdens_select" id="densitySelect">
 		<option value="">Select from a list</option>
         {% for value, label in pdens_options %}
@@ -91,14 +98,16 @@
       
       <h3 align=left>Impact Parameters</h3>
       <blockquote>
-	Impact Velocity
+	<label for="vel">Impact Velocity</label>
 	<input type="text" name="vel" id="vel" size=10>  <!-- Input for velocity (max 72 km/s)-->
+	<label for="velUnits">Velocity units</label>
 	<select name="velocityUnits" id="velUnits">
 	  
 	  <option value="1">km/s
 	  <option value="2">miles/s
 	</select> or
 	
+	<label for="velsel">Velocity template</label>
 	<select name="velocity_select" id="velsel" style="width: 275px;">
     	<option value="0">Select from a list
         {% for value, label in velocities %}
@@ -108,8 +117,9 @@
 	<span id="velocity-error" class="error"></span>
 	<p>This is the velocity of the projectile before it enters the atmosphere.  The minimum impact velocity on Earth is 11 km/s.  Typical impact velocities are 17 km/s for asteroids and 51 km/s for comets.  The maximum Earth impact velocity for objects orbiting the sun is 72 km/s.
 	  
-	<p>Impact Angle (in degrees)
+	<p><label for="theta">Impact Angle (in degrees)</label>
 	<input type="text" name="theta" id="theta" size=10>
+	<label for="angle_select">Angle template</label>
 	<select name="angle_select" id="angle_select" style="width: 275px;">
 	<option value="0">Select from a list
 	{% for value, label in angles %}
@@ -123,16 +133,17 @@
       <h3 align=left>Target Parameters</h3>
 	<div class="target-type">
 	  <p>Target Type</p>
-	  <input type="radio" name="target_type" value ="water">Water of depth:  <input type="text" name="wdepth" id="depth" size=10>
-	  <select name="wdepthUnits">
+	  <input type="radio" name="target_type" id="target_water" value ="water"><label for="target_water">Water of depth:</label>  <label for="depth" class="visually-hidden">Water depth</label><input type="text" name="wdepth" id="depth" size=10>
+	  <label for="wdepthUnits">Depth units</label>
+	  <select name="wdepthUnits" id="wdepthUnits">
 	    <option>meters
 	    <option>feet
 	  </select>
 	  <br>
 	  <span id="depth-error" class="error"></span>
-	  <input type="radio" name="target_type" value ="sedimentary" checked>Sedimentary Rock
+	  <input type="radio" name="target_type" id="target_sedimentary" value ="sedimentary" checked><label for="target_sedimentary">Sedimentary Rock</label>
 	  <br>
-	  <input type="radio" name="target_type" value ="crystalline">Crystalline Rock
+	  <input type="radio" name="target_type" id="target_crystalline" value ="crystalline"><label for="target_crystalline">Crystalline Rock</label>
 	  <br>
 	  <span id="target-error" class="error"></span>
 	  </div>
