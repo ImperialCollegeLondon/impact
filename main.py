@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', title='Impact Effects Calculator')
 
 @app.route('/ImpactEffects')
 def impact_effects():
@@ -64,6 +64,7 @@ def impact_effects():
         "14000": "Chicxulub (14 km)"
     }
     return render_template('ImpactEffects.html', 
+                           title='Impact Effects Calculator',
                            locations=impact.get_cities(), 
                            craters=impact.get_craters(), 
                            pdens_options=density.items(), 
@@ -85,7 +86,8 @@ def map_page():
 
     target_type = request.args.get('target_type', 'sedimentary')
     target_density=impact.target_density(target_type)
-    context = dict(location=impact.get_location(request.args), 
+    context = dict(title='Impact Effects Calculator',
+                   location=impact.get_location(request.args), 
                    density=density, 
                    target_type=target_type,
                    target_density=target_density,
@@ -153,15 +155,15 @@ def map_page():
 
 @app.route('/examples')
 def examples():
-    return render_template('examples.html')
+    return render_template('examples.html', title='Impact Effects Calculator - Examples')
 
 @app.route('/craterexp')
 def craterexp():
-    return render_template('craterexp.html')
+    return render_template('craterexp.html', title='Impact Effects Calculator - Crater Experiments')
 
 @app.route('/craterglossary')
 def craterglos():
-    return render_template('craterglos.html')
+    return render_template('craterglos.html', title='Impact Effects Calculator - Crater Glossary')
 
 @app.template_filter('duration')
 def duration_filter(seconds):
