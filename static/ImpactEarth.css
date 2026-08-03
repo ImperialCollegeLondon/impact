@@ -209,8 +209,20 @@ dl.location  {
 .example-card dl {
     margin: 0;
 }
+.example-card dt {
+    display: inline;
+}
+.example-card dt::after {
+    content: ": ";
+    font-weight: normal;
+}
 .example-card dd {
+    display: inline;
     margin-left: 0;
+}
+.example-card dd::after {
+    content: "";
+    display: block;
     margin-bottom: 0.5em;
 }
 .mercalli {
