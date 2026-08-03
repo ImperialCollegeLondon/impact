@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='ImpactEarth.css') }}">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='impact.js') }}"></script>
 </head>
 <body>
@@ -17,8 +23,8 @@
         <td><img class="banner_image" align=right SRC="static/purduemark.png" BORDER=5 alt="Purdue University logo"></td>
         </tr>
         </table>
-<h1 align=center><a href="http://impact.ese.ic.ac.uk">Impact: Earth!</a></h1>
-<h3 align=center><a href="http://www.imperial.ac.uk/people/g.collins">Gareth Collins</a>, <a href="https://meteoritical.org/news/h-jay-melosh-1947-2020">H. Jay Melosh</a> and Robert Marcus</h3>
+<h1 align=center><a href="/">Impact: Earth!</a></h1>
+<h2 align=center class="authors"><a href="http://www.imperial.ac.uk/people/g.collins">Gareth Collins</a>, <a href="https://meteoritical.org/news/h-jay-melosh-1947-2020">H. Jay Melosh</a> and Robert Marcus</h2>
     </header>
     <main>
     {% block content %}{% endblock %}
@@ -26,7 +32,7 @@
 	<aside class="discussion">
 	<h3>Tell me more...</h3>	
 	<p>
-    Read the <a href="static/effects.pdf">Earth Impact Effects Program</a> publication
+    Read the <a href="static/effects.pdf">Earth Impact Effects Program Publication</a> 
 	</p>
     <p>This paper details the observations, assumptions, and equations upon 
 		which this program is based.  It describes our approach to quantifying 

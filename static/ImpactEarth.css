@@ -264,6 +264,10 @@ div.target-type {
   display: block;
 }
 
+.authors {
+    font-size: 16pt;
+}
+
 input:invalid {
   border: 1px solid red;
 }
