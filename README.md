@@ -24,6 +24,19 @@ From the repository root:
 5. Open in your browser.
 	http://127.0.0.1:5000/
 
+## Deploying to Azure
+
+The app runs on Azure App Service as web app `ese-impact` (resource group `Impact`).
+
+To deploy the current code, make sure you're logged in (`az login`), then run:
+
+	./deploy.sh
+
+This zips the project (excluding `.git`, virtual environments, and tests) and
+deploys it via `az webapp deployment source config-zip`, which triggers an
+Oryx build (installing `requirements.txt`) and restarts the site. The app is
+served at https://ese-impact.azurewebsites.net using Gunicorn.
+
 ## Tests
 
 Run the test suite from the repository root:
