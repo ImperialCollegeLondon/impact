@@ -293,6 +293,17 @@ dl.location  {
     display: block;
     margin-bottom: 0.65em;
 }
+.glossary-title {
+    font-size: 24pt;
+    font-weight: bold;
+    text-align: center;
+}
+.glossary-list dt {
+    font-weight: bold;
+}
+.glossary-list dd {
+    margin-bottom: 1em;
+}
 ul.damage {
     list-style-type: disc;
 }
