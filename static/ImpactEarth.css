@@ -225,6 +225,30 @@ dl.location  {
     display: block;
     margin-bottom: 0.5em;
 }
+.impact-summary-list {
+    margin: 0;
+}
+.impact-summary-list dt {
+    display: inline;
+    font-style: italic;
+    margin-left: 40px;
+}
+.impact-summary-list dt::after {
+    content: ": ";
+}
+.crater-dimensions-aside {
+    margin-left: 40px;
+    margin-bottom: 3em;
+}
+.impact-summary-list dd {
+    display: inline;
+    margin-left: 0;
+}
+.impact-summary-list dd::after {
+    content: "";
+    display: block;
+    margin-bottom: 0.5em;
+}
 .mercalli {
     font-weight: bold;
     color: #09405a;

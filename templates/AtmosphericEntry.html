@@ -1,30 +1,42 @@
-<dl>
-    <dt>
-        <h2>Atmospheric Entry:</h2>
+<h2>Atmospheric Entry:</h2>
+<dl class="impact-summary-list">
     {% if iFactor >= 1.0 %}
+        <dt>Projectile Condition</dt>
         <dd>The projectile lands intact, with a velocity <b>12.3 km/s = 7.6 miles/s</b>.</dd>
+        <dt>Atmospheric Energy Loss</dt>
         <dd>The energy lost in the atmosphere is <b>2.50 x 10<sup>15</sup> Joules = 1.20 x 10<sup>3</sup> MegaTons</b>.</dd>
     {% else %}
-        <dd>The projectile begins to breakup at an altitude of <b> {{ altitudeBU|int }} meters = {{ (altitudeBU * 3.28084) | int }} ft</b></dd>
+        <dt>Breakup Altitude</dt>
+        <dd>The projectile begins to breakup at an altitude of <b>{{ altitudeBU | int }} meters = {{ (altitudeBU * 3.28084) | int }} ft</b></dd>
         {% if altitudeBurst > 0 %}
-            <dd>The projectile bursts into a cloud of fragments at an altitude of <b>{{ altitudeBurst|round(3) }} meters = {{ (altitudeBurst * 3.28084)| int }} ft</b></dd>
+            <dt>Burst Altitude</dt>
+            <dd>The projectile bursts into a cloud of fragments at an altitude of <b>{{ altitudeBurst | round(3) }} meters = {{ (altitudeBurst * 3.28084) | int }} ft</b></dd>
+            <dt>Residual Velocity</dt>
             <dd>The residual velocity of the projectile fragments after the burst is <b>{{ residual_velocity | round(1) }} km/s = {{ (residual_velocity * 0.621371) | round(1) }} miles/s</b></dd>
+            <dt>Airburst Energy</dt>
             <dd>The energy of the airburst is {{ energy_joules | scientific | safe }} Joules = {{ (energy_joules / 4.184e15) | round(2) }} MegaTons</dd>
+            <dt>Crater Formation</dt>
             {% if density < 5000 %}
                 <dd>No crater is formed, although large fragments may strike the surface.</dd>
             {% else %}
-                <dd>Large fragments strike the surface and may create a crater strewn field. 
-                    A more careful treatment of atmospheric entry is required to accurately estimate 
-                    the size-frequency distribution of meteoroid fragments and predict the number and 
-                    size of craters formed.</dd>
+                <dd>
+                    Large fragments strike the surface and may create a crater strewn field.
+                    A more careful treatment of atmospheric entry is required to accurately estimate
+                    the size-frequency distribution of meteoroid fragments and predict the number and
+                    size of craters formed.
+                </dd>
             {% endif %}
         {% else %}
+            <dt>Projectile Condition</dt>
             <dd>The projectile reaches the ground in a broken condition. The mass of projectile strikes the surface at velocity <b>{{ residual_velocity | sigfigs(2) }} km/s = {{ (residual_velocity * 0.621371) | sigfigs(3) }} miles/s</b></dd>
-            <dd>The energy lost in the atmosphere is {{ lost_energy_joules | scientific | safe }} Joules = {{ (lost_energy_joules / 4.184e15) | round(2) }} MegaTons</b>.</dd>
+            <dt>Atmospheric Energy Loss</dt>
+            <dd>The energy lost in the atmosphere is {{ lost_energy_joules | scientific | safe }} Joules = {{ (lost_energy_joules / 4.184e15) | round(2) }} MegaTons.</dd>
+            <dt>Impact Energy</dt>
             <dd>The impact energy is <b>{{ energy_surface | scientific | safe }} Joules = {{ (energy_surface / 4.184e15) | scientific | safe }} MegaTons</b>.</dd>
+            <dt>Airblast Basis</dt>
             <dd>The larger of these two energies is used to calculate the airblast damage.</dd>
-            <dd>The broken projectile fragments strike the ground in an ellipse of dimension 
-                <b>{{ dispersion_ellipse[0] | round(2) }} km by {{ dispersion_ellipse[1] | round(2) }} km</b></dd>
+            <dt>Fragment Dispersion</dt>
+            <dd>The broken projectile fragments strike the ground in an ellipse of dimension <b>{{ dispersion_ellipse[0] | round(2) }} km by {{ dispersion_ellipse[1] | round(2) }} km</b></dd>
         {% endif %}
-    {% endif %} 
+    {% endif %}
 </dl>

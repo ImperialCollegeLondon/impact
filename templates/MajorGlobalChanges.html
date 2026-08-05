@@ -1,23 +1,20 @@
-    <dl>
-        <dt>
-            <h2>Major Global Changes:</h2>
-
-            {% if globalstate == "destroyed" %}
-                <dd>The Earth is completely disrupted by the impact and its debris forms a new asteroid belt orbiting the sun between Venus and Mars.
-                </dd>
-                {% set skip = true %}
-            {% elif globalstate == "disturbed" %}
-                <dd>The Earth is strongly disturbed by the impact, but loses little mass.
-                </dd>
-            {% else %}
-                <dd>The Earth is not strongly disturbed by the impact and loses negligible mass.</dd>
-            {% endif %}
-    </dt>
-	
-    {% if mratio >= 0.01 %}
-      <dd><b>{{ (mratio * 100) | round(2) }}</b> percent of the Earth is melted by the impact.</dd>
+<h2>Major Global Changes:</h2>
+<dl class="impact-summary-list">
+    <dt>Global State</dt>
+    {% if globalstate == "destroyed" %}
+        <dd>The Earth is completely disrupted by the impact and its debris forms a new asteroid belt orbiting the sun between Venus and Mars.</dd>
+    {% elif globalstate == "disturbed" %}
+        <dd>The Earth is strongly disturbed by the impact, but loses little mass.</dd>
+    {% else %}
+        <dd>The Earth is not strongly disturbed by the impact and loses negligible mass.</dd>
     {% endif %}
-    
+
+    {% if mratio >= 0.01 %}
+        <dt>Earth Melted</dt>
+        <dd><b>{{ (mratio * 100) | round(2) }}</b> percent of the Earth is melted by the impact.</dd>
+    {% endif %}
+
+    <dt>Axial Tilt Change</dt>
     {% if lratio >= 0.001 %}
         <dd>
             Depending on the direction and location of the collision,
@@ -36,19 +33,24 @@
     {% endif %}
 
     {% if (trot_change > 1E-3) %}
-      <dd>Depending on the direction and location of impact, the collision may cause a change in the length of 
-        the day of up to <b>{{ trot_change | duration}}</b>.</dd>
+        <dt>Length of Day Change</dt>
+        <dd>
+            Depending on the direction and location of impact, the collision may cause a change in the length of
+            the day of up to <b>{{ trot_change | duration }}</b>.
+        </dd>
     {% endif %}
-	
+
+    <dt>Orbital Shift</dt>
     <dd>
-    {% if (orbit_impact == "Noticeable") %}
-	    The impact shifts the Earth's orbit noticeably.
-    {%  elif (orbit_impact == "Substantial") %}
-	    The imapct shifts the Earth's orbit substantially.
-    {% elif (orbit_impact == "Total") %}
-	    The impact shifts the Earth's orbit totally.
-    {% else %}
-        The impact does not shift the Earth's orbit noticeably.
-    {% endif %}
-	</dd>
+        {% if (orbit_impact == "Noticeable") %}
+            The impact shifts the Earth's orbit noticeably.
+        {% elif (orbit_impact == "Substantial") %}
+            The impact shifts the Earth's orbit substantially.
+        {% elif (orbit_impact == "Total") %}
+            The impact shifts the Earth's orbit totally.
+        {% else %}
+            The impact does not shift the Earth's orbit noticeably.
+        {% endif %}
+    </dd>
+</dl>
 
