@@ -253,8 +253,45 @@ dl.location  {
     font-weight: bold;
     color: #09405a;
 }
-.mercalli-explanation dd {
-    margin-bottom: 10px;
+.mercalli-list {
+    margin: 0;
+    margin-top: 1rem;
+}
+.mercalli-list dt {
+    display: inline;
+    margin-left: 40px;
+}
+.mercalli-list dt::after {
+    content: ". ";
+}
+.mercalli-list dd {
+    display: inline;
+    margin-left: 0;
+}
+.mercalli-list dd::after {
+    content: "";
+    display: block;
+    margin-bottom: 0.8em;
+}
+.masonry-list {
+    margin: 0;
+    margin-top: 1rem;
+}
+.masonry-list dt {
+    display: inline;
+    margin-left: 40px;
+}
+.masonry-list dt::after {
+    content: ". ";
+}
+.masonry-list dd {
+    display: inline;
+    margin-left: 0;
+}
+.masonry-list dd::after {
+    content: "";
+    display: block;
+    margin-bottom: 0.65em;
 }
 ul.damage {
     list-style-type: disc;

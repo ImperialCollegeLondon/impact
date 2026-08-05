@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Examples{% endblock %}
 {% block content %}
-<h4><a name="crater">What are Transient and Final Crater Diameters?</a></h4>
+<h3><a name="crater">What are Transient and Final Crater Diameters?</a></h3>
 <p>When the projectile strikes the surface, it ejects rock from the surface, resulting in a crater.  Shortly after the impact, the 
 ground around the initially formed crater begins to collapse inward.  </p>
 <p>The Transient Crater Diameter is the distance from rim to rim of the crater that forms immediately after the impact, before the 
@@ -10,7 +10,7 @@ collapse begins. </p>
 </p>
 
 
-<h4><a name="thermal">What is Thermal Radiation?</a></h4>
+<h3><a name="thermal">What is Thermal Radiation?</a></h3>
 <p>Terrestrial meteoroid impacts produce a cloud of hot vapor, termed the "fireball," which expands away from the impact point.  The 
 bulk of the thermal energy from this cloud is emitted when the fireball has expanded and cooled to a surface temperature of about 3000 
 K. </p>
@@ -30,49 +30,51 @@ These descriptions include:
 </ul>
 
 <div class="mercalli-explanation">
-<h4><a name="seismic">What is Mercalli Scale Intensity?</a></h4>
+<h3><a name="seismic">What is Mercalli Scale Intensity?</a></h3>
 <p>The Mercalli Scale is a set of 12 descriptions of the damage due to ground acceleration.</p>
 The descriptions are:
-<dl>
-<dd><span class="mercalli">I.</span>  Not felt.  Marginal and long-period effects of large earthquakes.</dd>
-<dd><span class="mercalli">II.</span>  Felt by persons at rest, on upper floors, or favorably placed.</dd>
-<dd><span class="mercalli">III.</span>  Felt indoors.  Hanging objects swing.  Vibration like passing of light trucks.  Duration estimated.  may not be recognized as 
-an earthquake.</dd>
-<dd><span class="mercalli">IV.</span>  Hanging objects swing.  Vibration like passing of heavy trucks; or sensation of a jolt like a heavy ball striking the walls.  
-Standing motor cars rock.  Windows, dishes, doors rattle.  Glasses clink.  Crockery clashes.  In the upper range of IV wooden walls and 
-frame creak.</dd>
-<dd><span class="mercalli">V.</span>  Felt outdoors; direction estimated.  Sleepers wakened.  Liquids disturbed, some spilled.  Small unstable objects displaced or 
-upset.  Doors swing, close, open.  Shutters, pictures move.  Pendulum clocks stop, start, change rate.</dd>
-<dd><span class="mercalli">VI.</span>  Felt by all.  Many frightened and run outdoors.  Persons walk unsteadily.  Windows, dishes, glassware broken.  Knickknacks, 
-books, etc., off shelves.  Pictures off walls.  Furniture moved or overturned.  Weak plaster and masonry D cracked.  Small bells ring 
-(church, school).  Trees, bushes shaken (visibly, or heard to rustle).</dd>
-<dd><span class="mercalli">VII.</span>  Difficult to stand.  Noticed by drivers of motor cars.  Hanging objects quiver.  Furniture broken.  Damage to masonry D, 
-including cracks.  Weak chimneys broken at roof line.  Fall of plaster, loose bricks, stones, tiles, cornices (also unbraced parapets 
-and architectural ornaments).  Some cracks in masonry C.  Waves on ponds; water turbid with mud.  Small slides and caving in along sand 
-or gravel banks.  Large bells ring.  Concrete irrigation ditches damaged.</dd>
-<dd><span class="mercalli">VIII.</span>  Steering of motor cars affected.  Damage to masonry C; partial collapse.  Some damage to masonry B; none to masonry A.  Fall 
-of stucco and some masonry walls.  Twisting, fall of chimneys, factory stacks, monuments, towers, elevated tanks.  Frame houses moved on 
-foundations if not bolted down; loose panel walls thrown out.  Decayed piling broken off.  Branches broken from trees.  Changes in flow 
-or temperature of springs and wells.  Cracks in wet ground and on steep slopes.</dd>
-<dd><span class="mercalli">IX.</span>  General panic.  Masonry D destroyed; masonry C heavily damaged, sometimes with complete collapse; masonry B seriously damaged.  
-(General damage to foundations)  Frame structures, if not bolted, shifted off foundations.  Frames racked.  Serious damage to 
-reservoirs.  Underground pipes broken.  Conspicuous cracks in ground.  In alluviated areas sand and mud ejected, earthquake fountains, 
-sand craters.</dd>
-<dd><span class="mercalli">X.</span>  Most masonry and frame structures destroyed with their foundations.  Some well-built wooden structures and bridges destroyed.  
-Serious damage to dams, dikes, embankments.  Large landslides.  Water thrown on banks of canals, rivers, lakes, etc.  Sand and mud 
-shifted horizontally on beaches and flat land.  Rails bent slightly.</dd>
-<dd><span class="mercalli">XI.</span>  Rails bent greatly.  Underground pipelines completely out of service.</dd>
-<dd><span class="mercalli">XII.</span>  Damage nearly total.  Large rock masses displaced.  Lines of sight and level distorted.  Objects thrown into the air.</dd>
-<dd><span class="mercalli">Masonry A.</span>  Good workmanship, mortar, and design; reinforced, especially laterally, and bound together using steel, concrete, etc.; 
-designed to resist lateral forces.</dd>
-<dd><span class="mercalli">Masonry B.</span>  Good workmanship and mortar; reinforced, but not designed in detail to resist lateral forces.</dd>
-<dd><span class="mercalli">Masonry C.</span>  Ordinary workmanship and mortar; no extreme weaknesses like failing to tie in at corners, but neither reinforced nor 
-designed against horizontal forces.</dd>
-<dd><span class="mercalli">Masonry D.</span>  Weak materials, such as adobe; poor mortar; low standards of workmanship; weak horizontally.</dd>
+<dl class="mercalli-list">
+<dt><span class="mercalli">I</span></dt>
+<dd>Not felt.  Marginal and long-period effects of large earthquakes.</dd>
+<dt><span class="mercalli">II</span></dt>
+<dd>Felt by persons at rest, on upper floors, or favorably placed.</dd>
+<dt><span class="mercalli">III</span></dt>
+<dd>Felt indoors.  Hanging objects swing.  Vibration like passing of light trucks.  Duration estimated.  may not be recognized as an earthquake.</dd>
+<dt><span class="mercalli">IV</span></dt>
+<dd>Hanging objects swing.  Vibration like passing of heavy trucks; or sensation of a jolt like a heavy ball striking the walls.  Standing motor cars rock.  Windows, dishes, doors rattle.  Glasses clink.  Crockery clashes.  In the upper range of IV wooden walls and frame creak.</dd>
+<dt><span class="mercalli">V</span></dt>
+<dd>Felt outdoors; direction estimated.  Sleepers wakened.  Liquids disturbed, some spilled.  Small unstable objects displaced or upset.  Doors swing, close, open.  Shutters, pictures move.  Pendulum clocks stop, start, change rate.</dd>
+<dt><span class="mercalli">VI</span></dt>
+<dd>Felt by all.  Many frightened and run outdoors.  Persons walk unsteadily.  Windows, dishes, glassware broken.  Knickknacks, books, etc., off shelves.  Pictures off walls.  Furniture moved or overturned.  Weak plaster and <a href="#masonry-d">masonry D</a> cracked.  Small bells ring (church, school).  Trees, bushes shaken (visibly, or heard to rustle).</dd>
+<dt><span class="mercalli">VII</span></dt>
+<dd>Difficult to stand.  Noticed by drivers of motor cars.  Hanging objects quiver.  Furniture broken.  Damage to <a href="#masonry-d">masonry D</a>, including cracks.  Weak chimneys broken at roof line.  Fall of plaster, loose bricks, stones, tiles, cornices (also unbraced parapets and architectural ornaments).  Some cracks in <a href="#masonry-c">masonry C</a>.  Waves on ponds; water turbid with mud.  Small slides and caving in along sand or gravel banks.  Large bells ring.  Concrete irrigation ditches damaged.</dd>
+<dt><span class="mercalli">VIII</span></dt>
+<dd>Steering of motor cars affected.  Damage to <a href="#masonry-c">masonry C</a>; partial collapse.  Some damage to <a href="#masonry-b">masonry B</a>; none to <a href="#masonry-a">masonry A</a>.  Fall of stucco and some masonry walls.  Twisting, fall of chimneys, factory stacks, monuments, towers, elevated tanks.  Frame houses moved on foundations if not bolted down; loose panel walls thrown out.  Decayed piling broken off.  Branches broken from trees.  Changes in flow or temperature of springs and wells.  Cracks in wet ground and on steep slopes.</dd>
+<dt><span class="mercalli">IX</span></dt>
+<dd>General panic.  <a href="#masonry-d">Masonry D</a> destroyed; <a href="#masonry-c">masonry C</a> heavily damaged, sometimes with complete collapse; <a href="#masonry-b">masonry B</a> seriously damaged.  (General damage to foundations)  Frame structures, if not bolted, shifted off foundations.  Frames racked.  Serious damage to reservoirs.  Underground pipes broken.  Conspicuous cracks in ground.  In alluviated areas sand and mud ejected, earthquake fountains, sand craters.</dd>
+<dt><span class="mercalli">X</span></dt>
+<dd>Most masonry and frame structures destroyed with their foundations.  Some well-built wooden structures and bridges destroyed.  Serious damage to dams, dikes, embankments.  Large landslides.  Water thrown on banks of canals, rivers, lakes, etc.  Sand and mud shifted horizontally on beaches and flat land.  Rails bent slightly.</dd>
+<dt><span class="mercalli">XI</span></dt>
+<dd>Rails bent greatly.  Underground pipelines completely out of service.</dd>
+<dt><span class="mercalli">XII</span></dt>
+<dd>Damage nearly total.  Large rock masses displaced.  Lines of sight and level distorted.  Objects thrown into the air.</dd>
+
+</dl>
+
+<p><em>Masonry descriptions:</em></p>
+<dl class="masonry-list">
+<dt id="masonry-a"><span class="mercalli">Masonry A</span></dt>
+<dd>Good workmanship, mortar, and design; reinforced, especially laterally, and bound together using steel, concrete, etc.; designed to resist lateral forces.</dd>
+<dt id="masonry-b"><span class="mercalli">Masonry B</span></dt>
+<dd>Good workmanship and mortar; reinforced, but not designed in detail to resist lateral forces.</dd>
+<dt id="masonry-c"><span class="mercalli">Masonry C</span></dt>
+<dd>Ordinary workmanship and mortar; no extreme weaknesses like failing to tie in at corners, but neither reinforced nor designed against horizontal forces.</dd>
+<dt id="masonry-d"><span class="mercalli">Masonry D</span></dt>
+<dd>Weak materials, such as adobe; poor mortar; low standards of workmanship; weak horizontally.</dd>
 </dl>
 </div>
 
-<h4><a name="ejecta">What is ejecta?</a></h4> 
+<h3><a name="ejecta">What is ejecta?</a></h3> 
 <p>Debris excavated during the impact is deposited on the Earth's surface around the
 impact crater.  This debris is called ejecta. 
 <p>Ejecta is formed of particles (rock fragments) of a range of sizes. The average fragment size that we report is the average particle size at the given distance, but a range of particle sizes will land at any given location. Average fragment size decreases with distance from the crater, because smaller fragments tend to be ejected faster and from closer to the impact point.</p>
@@ -81,7 +83,7 @@ transient crater</a> rim and decreases as one over the distance from the rim cub
 <p>At a given distance from the crater, the ejecta deposit may have a range of thicknesses, depending on the direction, particularly at ranges where the ejecta is discontinuous. Hence the estimate of ejecta thickness we give is an "average" around the crater at the given distance.</p>
 
 
-<h4><a name="airblast">What is the air blast?</a></h4>
+<h3><a name="airblast">What is the air blast?</a></h3>
 <p>The energy due to the impact causes a distortion in the air.  This distortion travels in the form of a wave.  If the energy of the 
 impact is very high, the wave may initially be a shock wave, travelling at a velocity greater than the speed of sound in air.  The wave 
 eventually decays into a sound wave travelling at 300 m/s (671 mph).
@@ -105,6 +107,6 @@ The air blast caused by the impact can cause a great deal of damage.
     <li>Up to 90 percent of trees blown down; remainder stripped of branches and leaves.</li>
 </ul>
 
-<h4><a name="tsunami">What is a tsunami?</a></h4>
+<h3><a name="tsunami">What is a tsunami?</a></h3>
 Impact-generated tsunami explained here...
 {% endblock %}
