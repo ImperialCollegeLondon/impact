@@ -1,68 +1,75 @@
-<dl>
-    <dt><h2>Crater Dimensions:</h2>
-<dd><a target="blank" href="craterexp#crater">What does this mean?</a>
-
+<h2>Crater Dimensions:</h2>
+<aside class="crater-dimensions-aside"><a target="blank" href="craterexp#crater">What does this mean?</a></aside>
 {% if depth_meters > 0 %}
-    The crater opened in the water has a diameter of <b>{{ wdiameter | distance }}</b>.
-    <dd><br>
+    <p>The crater opened in the water has a diameter of <b>{{ wdiameter | distance }}</b>.</p>
     {% if Dtr > 0 %}
-        <dd>For the crater formed in the seafloor:
+        <p>For the crater formed in the seafloor:</p>
     {% endif %}
 {% endif %}
 
-<p>
 {% if diameter_meters < 1000 %}
     {% if dispersion >= Dtr %}
-        The result of the impact is a crater field, not a single crater.  The following dimensions are for the crater produced by the largest fragment.
+        The result of the impact is a crater field, not a single crater. The following dimensions are for the crater produced by the largest fragment.
     {% elif iFactor < 1.0 %}
         Crater shape is normal in spite of atmospheric crushing; fragments are not significantly dispersed.
     {% endif %}
 {% endif %}
-</p>
 
-<dd><a target="blank" href="craterglossary#transient">Transient Crater</a> Diameter:
-    <b>{{ Dtr | distance }}</b></dd>
-<dd>Transient Crater Depth: {{(Dtr / 2.828) | distance }}</dd>
-<p> </p>
-{% if mratio != 1.0 %}
-    <dd><a target="blank" href="craterglossary#final">Final Crater</a> Diameter:
-        <b>{{ cdiameter | distance }}</b>
-    <dd>Final Crater Depth:  <b>{{ depthfr | distance }}</b>
+<dl class="impact-summary-list">
 
-    <p>
-    {% if mcratio > 1.0 %}
-        The final crater is replaced by a large, circular melt province.
-    {% elif cdiameter > 3200 %}
-        <dd>The crater formed is a <a target="blank" href="craterglossary#complex">complex crater</a>.
-    {% else %}
-        <dd>The crater formed is a <a target="blank" href="craterglossary#simple">simple crater</a>
-        <dd>The floor of the crater is underlain by a lens of broken rock debris (breccia) with a maximum thickness of <b>{{ breccia_thickness | distance }}</b>.
-    {% endif %}
-    </p>
 
-    {% if residual_velocity >= 12 and mratio < 0.1 %}
-        <p>
-        {% if vMelt < 0.001 %}
-            The volume of the target melted or vaporized is {{vMelt | round(2) }} m<sup>3</sup> = {{ (vMelt * 10**9 * 3.28**3) | round(2) }} feet<sup>3</sup>
+    <dt>Transient Crater Diameter</dt>
+    <dd><a target="blank" href="craterglossary#transient">Transient Crater</a> diameter: <b>{{ Dtr | distance }}</b></dd>
+
+    <dt>Transient Crater Depth</dt>
+    <dd>{{ (Dtr / 2.828) | distance }}</dd>
+
+    {% if mratio != 1.0 %}
+        <dt>Final Crater Diameter</dt>
+        <dd><a target="blank" href="craterglossary#final">Final Crater</a> diameter: <b>{{ cdiameter | distance }}</b></dd>
+
+        <dt>Final Crater Depth</dt>
+        <dd><b>{{ depthfr | distance }}</b></dd>
+
+        <dt>Crater Type</dt>
+        {% if mcratio > 1.0 %}
+            <dd>The final crater is replaced by a large, circular melt province.</dd>
+        {% elif cdiameter > 3200 %}
+            <dd>The crater formed is a <a target="blank" href="craterglossary#complex">complex crater</a>.</dd>
         {% else %}
-            The volume of the target melted or vaporized is {{vMelt | round(2) }} km<sup>3</sup> = {{ (vMelt * 0.239912) | round(2) }} miles<sup>3</sup>
+            <dd>The crater formed is a <a target="blank" href="craterglossary#simple">simple crater</a>.</dd>
+            <dt>Breccia Lens Thickness</dt>
+            <dd>The floor of the crater is underlain by a lens of broken rock debris (breccia) with a maximum thickness of <b>{{ breccia_thickness | distance }}</b>.</dd>
         {% endif %}
-        </p>
 
-        {% if mcratio < 1.0 %}
-            Roughly half the melt remains in the crater
-            {% if Dtr >= 3200 %}
-                , where its average thickness is <b>{{ (melt_thickness * 1000) | distance }}</b>. 
+        {% if residual_velocity >= 12 and mratio < 0.1 %}
+            <dt>Melted or Vaporised Volume</dt>
+            {% if vMelt < 0.001 %}
+                <dd>The volume of the target melted or vaporised is {{ vMelt | round(2) }} m<sup>3</sup> = {{ (vMelt * 10**9 * 3.28**3) | round(2) }} feet<sup>3</sup>.</dd>
+            {% else %}
+                <dd>The volume of the target melted or vaporised is {{ vMelt | round(2) }} km<sup>3</sup> = {{ (vMelt * 0.239912) | round(2) }} miles<sup>3</sup>.</dd>
             {% endif %}
+
+            {% if mcratio < 1.0 %}
+                <dt>Melt Retained in Crater</dt>
+                <dd>
+                    Roughly half the melt remains in the crater
+                    {% if Dtr >= 3200 %}
+                        , where its average thickness is <b>{{ (melt_thickness * 1000) | distance }}</b>
+                    {% endif %}
+                    .
+                </dd>
+            {% endif %}
+        {% else %}
+            <dt>Shock Melting</dt>
+            <dd>At this impact velocity (&lt; 12 km/s), little shock melting of the target occurs.</dd>
         {% endif %}
-    {% else %}
-        <dd>At this impact velocity ( < 12 km/s), little shock melting of the target occurs.
-    {% endif %}
 
-    {% if mcratio >= 1.0 %}
-        <dd>Melt volume = <b>{{ mcratio }}</b> times the crater volume
-        <dd>At this size, the crater forms in its own melt pool.
+        {% if mcratio >= 1.0 %}
+            <dt>Melt Volume Ratio</dt>
+            <dd>Melt volume = <b>{{ mcratio }}</b> times the crater volume.</dd>
+            <dt>Melt Pool Formation</dt>
+            <dd>At this size, the crater forms in its own melt pool.</dd>
+        {% endif %}
     {% endif %}
-
 </dl>
-{% endif %}
