@@ -292,6 +292,10 @@ div.target-type {
     font-size: 16pt;
 }
 
+footer {
+        font-size: x-small;
+}
+
 input:invalid {
   border: 1px solid red;
 }
