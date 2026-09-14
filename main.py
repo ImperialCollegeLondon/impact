@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 import impact
 import formatters
 
@@ -71,6 +71,11 @@ def impact_effects():
                            diameter_options=diameter_options.items(),
                            velocities=velocity_options.items(),
                            angles=angle_options.items())
+
+
+@app.route('/ImpactEarth/ImpactEffects')
+def legacy_impact_effects():
+    return redirect(url_for('impact_effects'), code=308)
 
 
 @app.route('/map')
