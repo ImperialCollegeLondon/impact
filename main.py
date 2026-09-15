@@ -73,7 +73,7 @@ def impact_effects():
                            angles=angle_options.items())
 
 
-@app.route('/ImpactEarth/ImpactEffects')
+@app.route('/ImpactEarth/ImpactEffects', strict_slashes=False)
 def legacy_impact_effects():
     return redirect(url_for('impact_effects'), code=308)
 
