@@ -25,10 +25,13 @@ zip -r "$ZIP_PATH" . \
 	> /dev/null
 
 echo "Deploying $ZIP_PATH to $APP_NAME (resource group $RESOURCE_GROUP)..."
-az webapp deployment source config-zip \
+# Uses Azure AD auth against Kudu; config-zip relies on basic auth, which is
+# disabled for this app and can leave deployments stuck with a 409 lock.
+az webapp deploy \
 	--resource-group "$RESOURCE_GROUP" \
 	--name "$APP_NAME" \
-	--src "$ZIP_PATH"
+	--src-path "$ZIP_PATH" \
+	--type zip
 
 rm -f "$ZIP_PATH"
 echo "Deployment complete: https://${APP_NAME}.azurewebsites.net"
