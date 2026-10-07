@@ -1,10 +1,23 @@
 import pytest
 import jinja2 
-import flask_app.impact
+import impact
 from pathlib import Path
 
+@pytest.mark.parametrize(
+    ("params", "expected_diameter"),
+    [
+        ({"diam": "2", "diameterUnits": "km"}, 2000),
+        ({"diam": "10", "diameterUnits": "ft"}, 3.048),
+        ({"diam": "", "diameterSelect": "500"}, 500),
+        ({"diam": "invalid", "diameterUnits": "m"}, 0),
+    ],
+)
+def test_get_impactor_diameter(params, expected_diameter):
+    assert impact.get_impactor_diameter(params) == pytest.approx(expected_diameter)
+
+
 def test_calc_energy():
-    results = flask_app.impact.calc_energy(
+    results = impact.calc_energy(
         pdiameter=100,  # diameter in meters
         pdensity=3000,  # density in kg/m^3
         vInput=20,      # initial velocity in km/s
@@ -21,7 +34,7 @@ def test_calc_energy():
     assert results['energy_seafloor'] > 0
 
 def test_calc_energy_gets_impact_energy():
-    results = flask_app.impact.calc_energy(
+    results = impact.calc_energy(
         pdiameter=320,  # diameter in meters
         pdensity=1000,  # density in kg/m^3
         vInput=50,      # initial velocity in km/s
@@ -35,12 +48,12 @@ def test_calc_energy_gets_impact_energy():
 
 
 def test_airblast_radius_crater():
-    radius, airblast = flask_app.impact.airblast_radius_crater(1000, 1500, 500, False, 100) 
+    radius, airblast = impact.airblast_radius_crater(1000, 1500, 500, False, 100) 
     assert radius > 0
     assert airblast
 
 def test_find_crater():
-    crater_results = flask_app.impact.find_crater(
+    crater_results = impact.find_crater(
         theta=45,
         depth=0,
         mass=1e9,
@@ -56,7 +69,7 @@ def test_find_crater():
     assert crater_results["CraterRadiusTransient"] > 0
    
 def test_find_crater_in_water():
-    crater_results = flask_app.impact.find_crater(
+    crater_results = impact.find_crater(
         theta=45,
         depth=50,
         mass=17157284678.805058,
@@ -71,7 +84,7 @@ def test_find_crater_in_water():
     assert pytest.approx(7732, rel=0.1) == crater_results["wdiameter"]
    
 def test_atmospheric_entry():
-    results = flask_app.impact.atmospheric_entry(
+    results = impact.atmospheric_entry(
         pdensity=3000,
         pdiameter=100,
         theta=45,
@@ -89,7 +102,7 @@ def test_atmospheric_entry():
 
 
 def test_velocity_after_burst():
-    results = flask_app.impact.atmospheric_entry(
+    results = impact.atmospheric_entry(
         pdensity=1000,
         pdiameter=320,
         theta=45,
@@ -135,7 +148,8 @@ def test_energy_display():
     env.filters['scientific'] = lambda v: v  # simple filter for testing
     rendered = env.get_template("Energy.html").render(context)
 
-    assert "Energy before atmospheric entry: 1000000000.0 Joules" in rendered
+    assert "Energy Before Atmospheric Entry" in rendered
+    assert "1000000000.0 Joules" in rendered
     assert " = 0.00023900573613766732 KiloTons TNT" in rendered
     assert "The average interval between impacts of this size somewhere on Earth is" in rendered
     assert "<b>20.0 years.</b>" in rendered
@@ -185,14 +199,14 @@ def test_daylength_change():
     assert "the day of up to <b>3661 seconds</b>." in rendered
 
 def test_orbit_impact():
-    assert flask_app.impact.orbit_impact(0.0005) == "Negligible"
-    assert flask_app.impact.orbit_impact(0.2) == "Total"    
-    assert flask_app.impact.orbit_impact(0.005) == "Noticeable"    
-    assert flask_app.impact.orbit_impact(0.05) == "Substantial"
+    assert impact.orbit_impact(0.0005) == "Negligible"
+    assert impact.orbit_impact(0.2) == "Total"    
+    assert impact.orbit_impact(0.005) == "Noticeable"    
+    assert impact.orbit_impact(0.05) == "Substantial"
 
 
 def test_calculate_dispersion_ellipse():
-    a, b = flask_app.impact.calculate_dispersion_ellipse(
+    a, b = impact.calculate_dispersion_ellipse(
         dispersion=1059,
         theta=45
     )
@@ -201,7 +215,7 @@ def test_calculate_dispersion_ellipse():
 
 
 def test_calculate_lost_energy():
-    lost_energy = flask_app.impact.calculate_lost_energy(
+    lost_energy = impact.calculate_lost_energy(
         mass=100,
         entry_vkm=50,
         ending_vkm=30
@@ -210,7 +224,7 @@ def test_calculate_lost_energy():
 
 
 def test_airblast_radius_crater():
-    radius, airblast = flask_app.impact.airblast_radius_crater(
+    radius, airblast = impact.airblast_radius_crater(
         energy_ktons=1e15,
         rkt=1500,
         altitudeBurst=2000,
@@ -222,7 +236,7 @@ def test_airblast_radius_crater():
 
 
 def test_find_airblast():
-    airblast = flask_app.impact.find_airblast(
+    airblast = impact.find_airblast(
         energy_ktons=1e15,
         altitudeBurst=2000,
         qCrater=True,
@@ -232,7 +246,7 @@ def test_find_airblast():
 
 
 def test_air_blast():
-    airblast = flask_app.impact.air_blast(
+    airblast = impact.air_blast(
         energy_blast=1e15,
         distance=100,
         altitudeBurst=2000
@@ -242,14 +256,14 @@ def test_air_blast():
     assert airblast['vmax'] > 0
 
 def test_find_thermal():
-    thermal = flask_app.impact.find_thermal(
+    thermal = impact.find_thermal(
         energy_megatons=1e15,
         energy_surface=2000
     )
     assert len(thermal) == 3
 
 def test_ejecta_radius():
-    radius = flask_app.impact.ejecta_radius(
+    radius = impact.ejecta_radius(
         EjectaThickness=1,
         Dtr=1e8,
         CraterRadiusTransient=300,
@@ -258,7 +272,7 @@ def test_ejecta_radius():
     assert radius == 500
 
 def test_seismic_radius():
-    radius = flask_app.impact.seismic_radius(
+    radius = impact.seismic_radius(
         mag = 5,
         mag_eff=3,
         CraterRadiusFinal=1000
@@ -266,7 +280,7 @@ def test_seismic_radius():
     assert radius > 0
 
 def test_tsunami_radius():
-    radius = flask_app.impact.tsunami_radius(
+    radius = impact.tsunami_radius(
         Rmax=1000,
         Rexp=2,
         A=10,
@@ -274,3 +288,4 @@ def test_tsunami_radius():
         CraterRadiusFinal=300
     )
     assert radius > 0
+

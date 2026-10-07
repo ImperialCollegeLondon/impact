@@ -98,12 +98,16 @@ def get_impactor_diameter(params):
     except (TypeError, ValueError):
         pdiameter = 0
 
-    if punits == 2:
-        pdiameter *= 1000  # kilometers to meters
-    elif punits == 3:
-        pdiameter *= 0.3048  # feet to meters
-    elif punits == 4:
-        pdiameter *= 1609.34  # miles to meters
+    unit = str(punits).strip().lower() if punits is not None else ""
+    unit_factors = {
+        "1": 1.0, "m": 1.0, "meter": 1.0, "meters": 1.0,
+        "metre": 1.0, "metres": 1.0,
+        "2": 1000.0, "km": 1000.0, "kilometer": 1000.0,
+        "kilometers": 1000.0, "kilometre": 1000.0, "kilometres": 1000.0,
+        "3": 0.3048, "ft": 0.3048, "foot": 0.3048, "feet": 0.3048,
+        "4": 1609.34, "mi": 1609.34, "mile": 1609.34, "miles": 1609.34,
+    }
+    pdiameter *= unit_factors.get(unit, 1.0)
 
     return pdiameter
 
