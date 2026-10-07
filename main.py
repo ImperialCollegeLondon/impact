@@ -81,7 +81,7 @@ def legacy_impact_effects():
 @app.route('/map')
 def map_page():
     distance = request.args.get('distance', '')
-    distance_units = request.args.get('distance_units', 'km')
+    distance_units = request.args.get('distanceUnits', 'km')
     dist = impact.calculate_distance_km(distance, distance_units)
 
     try:
