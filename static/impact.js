@@ -72,7 +72,7 @@ function add_ejecta(groundzero, ejectaRadii, map ) {
         ejectaCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_E[idx] + ": " + formatDistance(radius))
+                .setContent(label_E[idx] + ": " + formatDistance(radius[1]))
                 .openOn(map);
         }
         );
