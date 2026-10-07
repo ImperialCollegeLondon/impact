@@ -106,7 +106,7 @@ function add_seismic(groundzero, seismicRadii, map ) {
         seismicCircle.on('mouseover', function (e) {
             var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(label_S[idx] + ": " + formatDistance(radius))
+                .setContent(label_S[idx] + ": " + formatDistance(radius[1]))
                 .openOn(map);
         }
         );
