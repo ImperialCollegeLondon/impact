@@ -271,6 +271,21 @@ def test_ejecta_radius():
     )
     assert radius == 500
 
+def test_calculate_ejecta_effects():
+    effects = impact.calculate_ejecta_effects(
+        distance_km=100,
+        Dtr=10000,
+        cdiameter=12500
+    )
+
+    assert effects["ejecta_arrival"] == pytest.approx(144.169, rel=1e-3)
+    assert effects["ejecta_thickness"] == pytest.approx(0.0892857)
+    assert effects["d_frag"] == pytest.approx(0.079427, rel=1e-3)
+
+def test_calculate_ejecta_effects_requires_positive_distance():
+    with pytest.raises(ValueError, match="distance_km must be greater than zero"):
+        impact.calculate_ejecta_effects(distance_km=0, Dtr=10000, cdiameter=12500)
+
 def test_seismic_radius():
     radius = impact.seismic_radius(
         mag = 5,
@@ -288,4 +303,3 @@ def test_tsunami_radius():
         CraterRadiusFinal=300
     )
     assert radius > 0
-

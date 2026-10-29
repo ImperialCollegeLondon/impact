@@ -1,0 +1,24 @@
+<h2>Ejecta:</h2>
+<aside class="crater-dimensions-aside"><a target="blank" href="craterexp#ejecta">What does this mean?</a></aside>
+<dl class="impact-summary-list">
+    {% if ejecta_description is string %}
+        <dt>Effect at Location</dt>
+        <dd>{{ ejecta_description }}</dd>
+    {% else %}
+        <dt>Arrival Time</dt>
+        <dd>The ejecta will arrive approximately <b>{{ ejecta_description.arrival_time | duration }}</b> after the impact.</dd>
+
+        <dt>Type of Ejecta Deposit</dt>
+        {% if ejecta_description.type_of_deposit == "continuous" %}
+            <dd>Your position is beneath the continuous ejecta deposit.</dd>
+        {% else %}
+            <dd>At your position there is a fine dusting of ejecta with occasional larger fragments.</dd>
+        {% endif %}
+
+        <dt>Average Ejecta Thickness</dt>
+        <dd><b>{{ ejecta_description.average_thickness | distance }}</b></dd>
+
+        <dt>Mean Fragment Diameter</dt>
+        <dd><b>{{ ejecta_description.mean_fragment_diameter  | distance }}</b></dd>
+    {% endif %}
+</dl>

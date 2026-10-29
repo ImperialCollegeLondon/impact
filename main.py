@@ -149,7 +149,20 @@ def map_page():
 
     context.update(impact.find_thermal(energy_results['energy_surface'], energy_results['energy_megatons']))
     context["ejecta_radii"] = impact.find_ejecta(context['Dtr'], context['CraterRadiusTransient'], context['CraterRadiusFinal'])
-
+    if dist > 0:
+        context.update(impact.calculate_ejecta_effects(dist, context['Dtr'], context['cdiameter']))
+        context["ejecta_description"] = impact.describe_ejecta(
+            energy_results['energy_megatons'],
+            dist,
+            energy_results['energy_surface'],
+            context['Dtr'],
+            context['cdiameter'],
+            context['ejecta_arrival'],
+            context['ejecta_thickness'],
+            context['d_frag']
+        )
+    else:
+        context["ejecta_description"] = "Your position was inside the transient crater and ejected upon impact."
     ### If at least Mercalli intensity III is reached, add the option to plot seismic shaking intensity
     context["seismic_radii"] = impact.find_seismic(energy_results['energy_seafloor'], context['CraterRadiusFinal']   )
 

@@ -563,6 +563,40 @@ def find_thermal(energy_surface, energy_megatons):
   return dict(RadiusClothingIgnition=RadiusClothingIgnition, RadiusVisibleFireball=RadiusVisibleFireball, RadiusFireball=RadiusFireball)
 
 
+def calculate_ejecta_effects(distance_km, Dtr, cdiameter):
+    """Calculate ejecta arrival time, thickness, and fragment size at a positive distance."""
+    if distance_km <= 0:
+        raise ValueError("distance_km must be greater than zero")
+
+    phi = distance_km / (2 * EARTH_RADIUS_KM)
+    tan_phi = math.tan(phi)
+    X = (2 * tan_phi) / (1 + tan_phi)
+    eccentricity = -math.sqrt(0.5 * (X - 1) ** 2 + 0.5)
+    semi_major_axis = (X * EARTH_RADIUS_KM * 1000) / (2 * (1 - eccentricity ** 2))
+
+    part1 = semi_major_axis ** 1.5 / math.sqrt(G * (EARTH_RADIUS_KM * 1000) ** 2)
+    term1 = 2 * math.atan(math.sqrt((1 - eccentricity) / (1 + eccentricity)) * math.tan(phi / 2))
+    term2 = (
+        eccentricity
+        * math.sqrt(1 - eccentricity ** 2)
+        * math.sin(phi)
+        / (1 + eccentricity * math.cos(phi))
+    )
+    ejecta_arrival = 2 * part1 * (term1 - term2)
+
+    ejecta_thickness = Dtr ** 4 / (112 * (distance_km * 1000) ** 3)
+
+    half_diameter = (cdiameter / 1000) / 2
+    dc = 2400 * half_diameter ** -1.62
+    d_frag = dc * (half_diameter / distance_km) ** 2.65
+
+    return {
+        "ejecta_arrival": ejecta_arrival,
+        "ejecta_thickness": ejecta_thickness,
+        "d_frag": d_frag,
+    }
+
+
 def find_ejecta(Dtr, CraterRadiusTransient, CraterRadiusFinal):
     """
     Calculates the ejecta radii for various particle sizes given crater parameters.
@@ -688,3 +722,23 @@ def target_density(target_type):
         'water': 1000,
         'sedimentary': 2500,
         'crystalline': 2700}.get(target_type, 2500) 
+
+def describe_ejecta(energy_megatons, distance_km, energy_surface, Dtr, cdiameter, ejecta_arrival, ejecta_thickness, d_frag):
+    if energy_megatons < 200 and distance_km > 2e-6 * energy_surface ** (1 / 3):
+        return "Most ejecta is blocked by Earth's atmosphere."
+    elif distance_km * 1000 <= Dtr / 2:
+        return "Your position was inside the transient crater and ejected upon impact."
+    elif distance_km * 1000 < cdiameter / 2:
+        return "Your position is in the region which collapses into the final crater."
+    elif ejecta_arrival >= 3600:
+        return "Little rocky ejecta reaches this site; fallout is dominated by condensed vapor from the projectile."
+    elif ejecta_thickness * 10**6 < 1:
+        return "Almost no solid ejecta reaches this site."
+    else:
+        return {
+            "arrival_time": ejecta_arrival,
+            "type_of_deposit": "continuous" if distance_km * 1000 <= 3 * cdiameter / 2 else "fine dusting",
+            "average_thickness": ejecta_thickness,
+            "mean_fragment_diameter": d_frag
+        }
+    
