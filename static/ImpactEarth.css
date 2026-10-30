@@ -100,6 +100,7 @@ h2 {
     font-weight: 450;
     font-size: 24pt;
     color: #1c488e;
+
 }
 h3 {
     font-family: sans-serif;
@@ -111,6 +112,11 @@ h3 {
 ul {
     margin: 20px;
     list-style-type: none;
+
+}
+ul.thermal-radiation-effects {
+    margin-left: 40px;
+    list-style-type: disc;
 }
 dl.location  {
     dd {
@@ -238,7 +244,7 @@ dl.location  {
 }
 .crater-dimensions-aside {
     margin-left: 40px;
-    margin-bottom: 3em;
+    margin-bottom: 1em;
 }
 .impact-summary-list dd {
     display: inline;
@@ -249,29 +255,16 @@ dl.location  {
     display: block;
     margin-bottom: 0.5em;
 }
-.mercalli {
+.mercalli-explanation ol[type="I"] li::marker {
     font-weight: bold;
     color: #09405a;
 }
-.mercalli-list {
+.mercalli-explanation li {
     margin: 0;
     margin-top: 1rem;
 }
-.mercalli-list dt {
-    display: inline;
+.inset {
     margin-left: 40px;
-}
-.mercalli-list dt::after {
-    content: ". ";
-}
-.mercalli-list dd {
-    display: inline;
-    margin-left: 0;
-}
-.mercalli-list dd::after {
-    content: "";
-    display: block;
-    margin-bottom: 0.8em;
 }
 .masonry-list {
     margin: 0;
@@ -306,6 +299,9 @@ dl.location  {
 }
 ul.damage {
     list-style-type: disc;
+}
+ul.damage li {
+    padding-bottom: 3px;
 }
 .note {
     font-style: italic;

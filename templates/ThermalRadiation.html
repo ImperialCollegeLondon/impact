@@ -1,0 +1,66 @@
+<h2>Thermal Radiation:</h2>
+<aside class="crater-dimensions-aside"><a target="blank" href="craterexp#thermal">What does this mean?</a></aside>
+{% macro format_time(seconds) -%}
+    {% if seconds > 3600 %}
+        {{ (seconds / 3600) | sigfigs(3) }} hours
+    {% elif seconds > 60 %}
+        {{ (seconds / 60) | sigfigs(3) }} minutes
+    {% elif seconds < 1 %}
+        {{ (seconds * 1000) | sigfigs(3) }} milliseconds
+    {% else %}
+        {{ seconds | sigfigs(3) }} seconds
+    {% endif %}
+{%- endmacro %}
+<dl class="impact-summary-list">
+    {% if thermal_effects.status == "no_fireball" %}
+        <dt>Effect at Location</dt>
+        <dd>At this impact velocity (&lt; 15 km/s), little vaporization occurs; no fireball is created, therefore, there is no thermal radiation damage.</dd>
+    {% elif thermal_effects.status == "below_horizon" %}
+        <dt>Effect at Location</dt>
+        <dd>The fireball is below the horizon. There is no direct thermal radiation.</dd>
+    {% else %}
+        <dt>Time for Maximum Radiation</dt>
+        <dd><b>{{ format_time(thermal_effects.max_radiation_time) }}</b> after impact</dd>
+
+        <dt>Fireball</dt>
+        {% if thermal_effects.inside_fireball %}
+            <dd>Your position is inside the fireball.</dd>
+        {% else %}
+            <dd>Visible fireball radius: <b>{{ thermal_effects.visible_fireball_radius | distance }}</b></dd>
+        {% endif %}
+
+        {% if thermal_effects.brightness >= 0.1 %}
+            <dt>Brightness</dt>
+            <dd>The fireball appears <b>{{ thermal_effects.brightness | sigfigs(3) }}</b> times larger than the sun.</dd>
+        {% endif %}
+
+        <dt>Thermal Exposure</dt>
+        {% if thermal_effects.thermal_power == 0 %}
+            <dd><b>{{ thermal_effects.thermal_exposure_mantissa | sigfigs(3) }} Joules/m<sup>2</sup></b></dd>
+        {% else %}
+            <dd><b>{{ thermal_effects.thermal_exposure_mantissa | sigfigs(3) }} x 10<sup>{{ thermal_effects.thermal_power }}</sup> Joules/m<sup>2</sup></b></dd>
+        {% endif %}
+
+        <dt>Duration of Irradiation</dt>
+        <dd><b>{{ format_time(thermal_effects.irradiation_time) }}</b></dd>
+
+        <dt>Radiant Flux</dt>
+        <dd>
+            Radiant flux (relative to the sun): <b>{{ thermal_effects.flux | sigfigs(3) }}</b>
+            {% if 15 <= thermal_effects.flux <= 25 %}
+                (Flux from a burner on full at a distance of 10 cm)
+            {% endif %}
+        </dd>
+
+        {% if thermal_effects.damage_descriptions %}
+            <dt>Effects of Thermal Radiation</dt>
+            <dd>
+                <ul class="thermal-radiation-effects">
+                    {% for description in thermal_effects.damage_descriptions %}
+                        <li>{{ description }}</li>
+                    {% endfor %}
+                </ul>
+            </dd>
+        {% endif %}
+    {% endif %}
+</dl>

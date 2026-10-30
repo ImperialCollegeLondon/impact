@@ -1,0 +1,37 @@
+<h2>Seismic Effects:</h2>
+<aside class="crater-dimensions-aside"><a target="blank" href="craterexp#seismic">What does this mean?</a></aside>
+<dl class="impact-summary-list">
+    {% if seismic_effects.richter_magnitude < 0 %}
+        <dt>Effect at Location</dt>
+        <dd>The Richter Scale Magnitude for this impact is less than zero; no seismic shaking will be felt.</dd>
+    {% else %}
+        <dt>Arrival Time</dt>
+        <dd>
+            {% if seismic_effects.seismic_arrival < 0.1 %}
+                The major seismic shaking will arrive almost instantly.
+            {% else %}
+                The major seismic shaking will arrive approximately <b>{{ seismic_effects.seismic_arrival | duration }}</b> after impact.
+            {% endif %}
+        </dd>
+
+        <dt>Richter Scale Magnitude</dt>
+        <dd>
+            <b>{{ seismic_effects.richter_magnitude | round(1) }}</b>
+            {% if seismic_effects.richter_magnitude >= 9.5 %}
+                <b>(This is greater than any earthquake in recorded history)</b>
+            {% endif %}
+        </dd>
+
+        <dt>Earthquake Damage</dt>
+        <dd>
+            <div class="mercalli-explanation inset">
+                <h3>Mercalli Scale Intensity at a distance of {{ distance_km }} km:</h3>
+                <ol type="I" start="{{ seismic_effects.mercalli_start }}">
+                    {% for description in seismic_effects.intensity_descriptions %}
+                        <li>{{ description | safe }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </dd>
+    {% endif %}
+</dl>

@@ -10,9 +10,10 @@
     a full discussion of this program, please refer to the 
     <a href="static/effects.pdf">Earth Impact Effects Program</a> publication.</p>
 
-    {% if distance_km == 0 %}
-        <div id="map"></div>
-    {% endif %}
+{% if display_map %}
+<div id="map"></div>
+{% endif %}
+
 <h2>Your Inputs:</h2>
 <dl class="impact-summary-list">
     {% if distance_km > 0 %}
@@ -42,16 +43,20 @@
         <dd>Crystalline Rock</dd>
     {% endif %}
 </dl>
-    {% include "Energy.html" %}
-    {% include "MajorGlobalChanges.html" %}
-    {% include "AtmosphericEntry.html" %}
-    {% include "ejecta.html" %}
-    {% if distance_km > 0 %}
-        {% include "AirBlast.html" %}
-    {% endif %}
+{% include "Energy.html" %}
+{% include "MajorGlobalChanges.html" %}
+{% include "AtmosphericEntry.html" %}
+{% if altitudeBurst <= 0 %}
+    {% include "CraterDimensions.html" %}
+{% endif %}
+{% if not display_map %}
     {% if altitudeBurst <= 0 %}
-        {% include "CraterDimensions.html" %}
+        {% include "ThermalRadiation.html" %}
+        {% include "SeismicEffects.html" %}
     {% endif %}
+    {% include "ejecta.html" %}
+    {% include "AirBlast.html" %}
+{% endif %}
 <script>
     var map = L.map('map').setView([0, 0], 2);
     var airblastRadii = [

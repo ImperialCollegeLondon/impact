@@ -96,7 +96,8 @@ def map_page():
                    density=density, 
                    target_type=target_type,
                    target_density=target_density,
-                   distance_km=dist)
+                   distance_km=dist,
+                   display_map=not (dist > 0))
 
     diameter_meters = impact.get_impactor_diameter(request.args)
     context['diameter_meters'] = diameter_meters
@@ -165,6 +166,16 @@ def map_page():
         context["ejecta_description"] = "Your position was inside the transient crater and ejected upon impact."
     ### If at least Mercalli intensity III is reached, add the option to plot seismic shaking intensity
     context["seismic_radii"] = impact.find_seismic(energy_results['energy_seafloor'], context['CraterRadiusFinal']   )
+    if dist > 0 and atmospheric_entry_effects['altitudeBurst'] <= 0:
+        context["seismic_effects"] = impact.calculate_seismic_effects(
+            energy_results['energy_seafloor'], dist
+        )
+        context["thermal_effects"] = impact.calculate_thermal_effects(
+            energy_results['energy_surface'],
+            energy_results['energy_megatons'],
+            dist,
+            residual_velocity
+        )
 
     if depth_meters > 0:
         context["tsunami_radii"] = impact.find_tsunami(depth_meters, context['wdiameter'], context['CraterRadiusFinal'])
@@ -177,7 +188,10 @@ def examples():
 
 @app.route('/craterexp')
 def craterexp():
-    return render_template('craterexp.html', title='Impact Effects Calculator - Crater Experiments')
+    return render_template('craterexp.html', 
+                           title='Impact Effects Calculator - Crater Experiments',
+                           mercalli=impact.MERCALLI_DESCRIPTIONS
+                           )
 
 @app.route('/craterglossary')
 def craterglos():

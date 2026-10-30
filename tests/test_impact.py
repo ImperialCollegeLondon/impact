@@ -262,6 +262,93 @@ def test_find_thermal():
     )
     assert len(thermal) == 3
 
+@pytest.mark.parametrize(
+    ("effective_threshold", "first_mercalli", "labels"),
+    [
+        (9, 10, (10, 11, 12)),
+        (8, 10, (10, 11)),
+        (7, 9, (9, 10)),
+        (6, 7, (7, 8)),
+        (5, 6, (6, 7)),
+        (4, 4, (4, 5)),
+        (3, 3, (3, 4)),
+        (2, 1, (1, 2)),
+    ],
+)
+def test_mercalli_levels(effective_threshold, first_mercalli, labels):
+    levels = impact.mercalli_levels(effective_threshold)
+
+    assert isinstance(levels, tuple)
+    actual_first_mercalli, descriptions = levels
+    assert actual_first_mercalli == first_mercalli
+    assert isinstance(descriptions, tuple)
+    assert descriptions == tuple(
+        impact.MERCALLI_DESCRIPTIONS[label - 1] for label in labels
+    )
+
+
+def test_calculate_seismic_effects():
+    effects = impact.calculate_seismic_effects(energy_seafloor=1e15, distance_km=100)
+
+    assert effects["richter_magnitude"] == pytest.approx(4.18)
+    assert effects["seismic_arrival"] == pytest.approx(20)
+    assert effects["intensity_descriptions"][0].startswith("Not felt.")
+
+@pytest.mark.parametrize(
+    ("effective_magnitude", "first_mercalli", "descriptions"),
+    [
+        (1.1, 1, ("Nothing would be felt",)),
+        (2.1, 1, ("Not felt.", "Felt by persons at rest")),
+        (3.1, 3, ("Felt quite noticeably", "Hanging objects swing")),
+        (4.1, 4, ("Hanging objects swing", "Felt outdoors")),
+        (5.1, 6, ("Felt by all", "Difficult to stand")),
+        (6.1, 7, ("Difficult to stand", "Steering of motor cars affected")),
+        (7.1, 9,("General panic", "Large landslides")),
+        (8.1, 10, ("Large landslides", "Rails bent greatly")),
+        (9.1, 10, ("Large landslides", "Rails bent greatly", "Damage nearly total")),
+    ],
+)
+def test_calculate_seismic_effects_uses_mercalli_levels(
+    effective_magnitude, first_mercalli, descriptions
+):
+    distance_km = 100
+    magnitude = effective_magnitude + 0.0048 * distance_km + 2.5644 - 1.4
+    energy_seafloor = 10 ** ((magnitude + 5.87) / 0.67)
+
+    effects = impact.calculate_seismic_effects(energy_seafloor, distance_km)
+
+    assert effects["mercalli_start"] == first_mercalli
+
+    assert len(effects["intensity_descriptions"]) == len(descriptions)
+    for expected, actual in zip(descriptions, effects["intensity_descriptions"]):
+        assert expected in actual
+
+
+
+def test_calculate_seismic_effects_requires_positive_distance():
+    with pytest.raises(ValueError, match="distance_km must be greater than zero"):
+        impact.calculate_seismic_effects(energy_seafloor=1e15, distance_km=0)
+
+def test_calculate_thermal_effects():
+    effects = impact.calculate_thermal_effects(
+        energy_surface=1e15,
+        energy_megatons=1e15 / (4.186 * 10**15),
+        distance_km=10,
+        velocity=20
+    )
+
+    assert effects["status"] == "visible"
+    assert effects["thermal_exposure"] == pytest.approx(4536.12)
+    assert effects["damage_descriptions"] == []
+
+def test_calculate_thermal_effects_conditions():
+    assert impact.calculate_thermal_effects(1e15, 1, 10, 14)["status"] == "no_fireball"
+    assert impact.calculate_thermal_effects(1e15, 1, 1000, 20)["status"] == "below_horizon"
+
+def test_calculate_thermal_effects_requires_positive_distance():
+    with pytest.raises(ValueError, match="distance_km must be greater than zero"):
+        impact.calculate_thermal_effects(1e15, 1, 0, 20)
+
 def test_ejecta_radius():
     radius = impact.ejecta_radius(
         EjectaThickness=1,

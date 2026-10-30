@@ -563,6 +563,79 @@ def find_thermal(energy_surface, energy_megatons):
   return dict(RadiusClothingIgnition=RadiusClothingIgnition, RadiusVisibleFireball=RadiusVisibleFireball, RadiusFireball=RadiusFireball)
 
 
+def calculate_thermal_effects(energy_surface, energy_megatons, distance_km, velocity):
+    """Calculate thermal radiation effects at a positive distance."""
+    distance_km = float(distance_km)
+    if distance_km <= 0:
+        raise ValueError("distance_km must be greater than zero")
+
+    if velocity < 15:
+        return {"status": "no_fireball"}
+
+    eta = 3e-3
+    fireball_radius_km = 2e-6 * energy_surface ** (1 / 3)
+    earth_radius_km = 6370.0
+    delta = distance_km / earth_radius_km
+    horizon_height_km = (1 - math.cos(delta)) * earth_radius_km
+
+    if horizon_height_km > fireball_radius_km:
+        return {"status": "below_horizon"}
+
+    angle = math.acos(min(1.0, horizon_height_km / fireball_radius_km))
+    visible_fraction = (2 / math.pi) * (
+        angle - (horizon_height_km / fireball_radius_km) * math.sin(angle)
+    )
+    thermal_exposure = (
+        eta * energy_surface / (2 * math.pi * (distance_km * 1000) ** 2)
+    ) * visible_fraction
+    thermal_power = int(math.log10(thermal_exposure)) if thermal_exposure > 0 else 0
+    thermal_exposure_mantissa = thermal_exposure / (10 ** thermal_power)
+
+    max_radiation_time = fireball_radius_km / velocity
+    irradiation_time = (
+        eta * energy_surface
+        / (
+            2 * math.pi * (fireball_radius_km * 1000) ** 2
+            * 5.67e-8 * 3000 ** 4
+        )
+    )
+    brightness = (fireball_radius_km - horizon_height_km) / (4.4e-3 * distance_km)
+    flux = thermal_exposure / (irradiation_time * 1000)
+
+    megaton_factor = energy_megatons ** (1 / 6)
+    damage_descriptions = []
+    if thermal_exposure > 1e6 * megaton_factor:
+        damage_descriptions.append("Clothing ignites")
+    if thermal_exposure > 4.2e5 * megaton_factor:
+        damage_descriptions.append("Much of the body suffers third degree burns")
+    elif thermal_exposure > 2.5e5 * megaton_factor:
+        damage_descriptions.append("Much of the body suffers second degree burns")
+    elif thermal_exposure > 1.3e5 * megaton_factor:
+        damage_descriptions.append("Much of the body suffers first degree burns")
+    if thermal_exposure > 3.3e5 * megaton_factor:
+        damage_descriptions.append("Newspaper ignites")
+    if thermal_exposure > 6.7e5 * megaton_factor:
+        damage_descriptions.append("Plywood flames")
+    if thermal_exposure > 2.5e5 * megaton_factor:
+        damage_descriptions.append("Deciduous trees ignite")
+    if thermal_exposure > 3.8e5 * megaton_factor:
+        damage_descriptions.append("Grass ignites")
+
+    return {
+        "status": "visible",
+        "max_radiation_time": max_radiation_time,
+        "inside_fireball": distance_km < fireball_radius_km,
+        "visible_fireball_radius": (fireball_radius_km - horizon_height_km) * 1000,
+        "brightness": brightness,
+        "thermal_exposure": thermal_exposure,
+        "thermal_exposure_mantissa": thermal_exposure_mantissa,
+        "thermal_power": thermal_power,
+        "irradiation_time": irradiation_time,
+        "flux": flux,
+        "damage_descriptions": damage_descriptions,
+    }
+
+
 def calculate_ejecta_effects(distance_km, Dtr, cdiameter):
     """Calculate ejecta arrival time, thickness, and fragment size at a positive distance."""
     if distance_km <= 0:
@@ -666,6 +739,121 @@ def find_seismic(energy_seafloor, CraterRadiusFinal):
         (9, RadiusMercalliIX),
         (12, RadiusMercalliXII)
     ]]
+
+
+MERCALLI_DESCRIPTIONS = [
+    "Not felt. Marginal and long-period effects of large earthquakes.",
+    
+    """Felt by persons at rest, on upper floors, or favorably placed. 
+    Delicately suspended objects may swing.""",
+
+    """Felt quite noticeably by people indoors, especially on upper floors of buildings. 
+    Many people do not recognise it as an earthquake. Standing vehicles may slightly rock. 
+    Vibrations are similar to the passing of a truck, with duration estimated.""",
+
+    """Hanging objects swing. Vibration like passing of heavy trucks; or sensation of 
+    a jolt like a heavy ball striking the walls. Standing motor cars rock. Windows, dishes, 
+    doors rattle. Glasses clink. Crockery clashes. In the upper range of IV wooden walls 
+    and frame creak.""",
+
+    """Felt outdoors; direction estimated. Sleepers wakened. Liquids disturbed, some spilled. 
+    Small unstable objects displaced or upset. Doors swing, close, open. Shutters, 
+    pictures move. Pendulum clocks stop, start, change rate.""",
+
+    """Felt by all. Many frightened and run outdoors. Persons walk unsteadily. Windows, 
+    dishes, glassware broken. Knickknacks, books, etc., off shelves. Pictures off walls. 
+    Furniture moved or overturned. Weak plaster and <a href="craterexp#masonry-d">masonry D</a> 
+    cracked. Small bells ring 
+    (church, school). Trees, bushes shaken (visibly, or heard to rustle).""",
+
+    """Difficult to stand. Noticed by drivers of motor cars. Hanging objects quiver. 
+    Furniture broken. Damage to <a href="craterexp#masonry-d">masonry D</a>, including cracks. 
+    Weak chimneys broken at roof line. Fall of plaster, loose bricks, stones, tiles, cornices (also unbraced parapets 
+    and architectural ornaments). Some cracks in <a href="craterexp#masonry-c">masonry C</a>. Waves on ponds; water turbid 
+    with mud. Small slides and caving in along sand or gravel banks. Large bells ring. 
+    Concrete irrigation ditches damaged.""",
+
+    """Steering of motor cars affected. Damage to <a href="craterexp#masonry-c">masonry C</a>; 
+    partial collapse. Some damage to <a href="craterexp#masonry-b">masonry B</a>; none to 
+    <a href="craterexp#masonry-a">masonry A</a>. Fall of stucco and some masonry walls. Twisting, 
+    fall of chimneys, factory stacks, monuments, towers, elevated tanks. Frame houses 
+    moved on foundations if not bolted down; loose panel walls thrown out. Decayed piling 
+    broken off. Branches broken from trees. Changes in flow or temperature of springs and 
+    wells. Cracks in wet ground and on steep slopes.""",
+
+    """General panic. <a href="craterexp#masonry-d">Masonry D</a> destroyed; 
+    <a href="craterexp#masonry-c">masonry C</a> heavily damaged, sometimes with complete 
+    collapse; <a href="craterexp#masonry-b">masonry B</a> seriously damaged. (General damage 
+    to foundations) Frame 
+    structures, if not bolted, shifted off foundations. Frames racked. Serious damage to 
+    reservoirs. Underground pipes broken. Conspicuous cracks in ground. In alluviated 
+    areas sand and mud ejected, earthquake fountains, sand craters.""",
+
+    """Most <a href="craterexp#masonry-d">masonry D</a> and frame structures destroyed with their foundations. Some well-built 
+    wooden structures and bridges destroyed. Serious damage to dams, dikes, embankments. 
+    Large landslides. Water thrown on banks of canals, rivers, lakes, etc. Sand and mud 
+    shifted horizontally on beaches and flat land. Rails bent slightly.""",
+
+    """Rails bent greatly. Underground pipelines completely out of service.""",
+
+    """Damage nearly total. Large rock masses displaced. Lines of sight and level distorted. 
+    Objects thrown into the air."""
+]
+
+
+def mercalli_levels(effective_magnitude):
+    """Return the Mercalli start and descriptions for this magnitude."""
+    levels_by_threshold = (
+        (9, (10, 11, 12)),
+        (8, (10, 11)),
+        (7, (9, 10)),
+        (6, (7, 8)),
+        (5, (6, 7)),
+        (4, (4, 5)),
+        (3, (3, 4)),
+        (2, (1, 2)),
+    )
+    for threshold, mercalli_labels in levels_by_threshold:
+        if effective_magnitude >= threshold:
+            return (
+                mercalli_labels[0],
+                tuple(MERCALLI_DESCRIPTIONS[level - 1] for level in mercalli_labels),
+            )
+    return (
+        1,
+        ("Nothing would be felt. However, seismic equipment may still detect the shaking.",),
+    )
+
+
+def calculate_seismic_effects(energy_seafloor, distance_km):
+    """Calculate seismic arrival time, magnitude, and intensity descriptions."""
+    distance_km = float(distance_km)
+    if distance_km <= 0:
+        raise ValueError("distance_km must be greater than zero")
+
+    earth_radius_km = 6370.0
+    magnitude = 0.67 * math.log10(energy_seafloor) - 5.87
+    delta_degrees = math.degrees(distance_km / earth_radius_km)
+
+    if distance_km >= 700:
+        acceleration = (
+            20 * 10 ** (magnitude - 1.66 * math.log10(delta_degrees) - 3.3) / 1000
+        )
+    elif distance_km >= 60:
+        acceleration = 10 ** (magnitude - (0.0048 * distance_km + 2.5644))
+    else:
+        acceleration = 10 ** (magnitude - (0.00238 * distance_km + 1.3342))
+
+    effective_magnitude = math.log10(acceleration) + 1.4
+
+    mercalli_start, intensity_descriptions = mercalli_levels(effective_magnitude)
+
+    return {
+        "richter_magnitude": magnitude,
+        "seismic_arrival": distance_km / 5,
+        "mercalli_start": mercalli_start,
+        "intensity_descriptions": intensity_descriptions,
+    }
 
 
 def seismic_radius(mag, mag_eff, CraterRadiusFinal):

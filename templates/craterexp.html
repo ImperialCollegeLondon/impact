@@ -33,33 +33,14 @@ These descriptions include:
 <h3><a name="seismic">What is Mercalli Scale Intensity?</a></h3>
 <p>The Mercalli Scale is a set of 12 descriptions of the damage due to ground acceleration.</p>
 The descriptions are:
-<dl class="mercalli-list">
-<dt><span class="mercalli">I</span></dt>
-<dd>Not felt.  Marginal and long-period effects of large earthquakes.</dd>
-<dt><span class="mercalli">II</span></dt>
-<dd>Felt by persons at rest, on upper floors, or favorably placed.</dd>
-<dt><span class="mercalli">III</span></dt>
-<dd>Felt indoors.  Hanging objects swing.  Vibration like passing of light trucks.  Duration estimated.  may not be recognized as an earthquake.</dd>
-<dt><span class="mercalli">IV</span></dt>
-<dd>Hanging objects swing.  Vibration like passing of heavy trucks; or sensation of a jolt like a heavy ball striking the walls.  Standing motor cars rock.  Windows, dishes, doors rattle.  Glasses clink.  Crockery clashes.  In the upper range of IV wooden walls and frame creak.</dd>
-<dt><span class="mercalli">V</span></dt>
-<dd>Felt outdoors; direction estimated.  Sleepers wakened.  Liquids disturbed, some spilled.  Small unstable objects displaced or upset.  Doors swing, close, open.  Shutters, pictures move.  Pendulum clocks stop, start, change rate.</dd>
-<dt><span class="mercalli">VI</span></dt>
-<dd>Felt by all.  Many frightened and run outdoors.  Persons walk unsteadily.  Windows, dishes, glassware broken.  Knickknacks, books, etc., off shelves.  Pictures off walls.  Furniture moved or overturned.  Weak plaster and <a href="#masonry-d">masonry D</a> cracked.  Small bells ring (church, school).  Trees, bushes shaken (visibly, or heard to rustle).</dd>
-<dt><span class="mercalli">VII</span></dt>
-<dd>Difficult to stand.  Noticed by drivers of motor cars.  Hanging objects quiver.  Furniture broken.  Damage to <a href="#masonry-d">masonry D</a>, including cracks.  Weak chimneys broken at roof line.  Fall of plaster, loose bricks, stones, tiles, cornices (also unbraced parapets and architectural ornaments).  Some cracks in <a href="#masonry-c">masonry C</a>.  Waves on ponds; water turbid with mud.  Small slides and caving in along sand or gravel banks.  Large bells ring.  Concrete irrigation ditches damaged.</dd>
-<dt><span class="mercalli">VIII</span></dt>
-<dd>Steering of motor cars affected.  Damage to <a href="#masonry-c">masonry C</a>; partial collapse.  Some damage to <a href="#masonry-b">masonry B</a>; none to <a href="#masonry-a">masonry A</a>.  Fall of stucco and some masonry walls.  Twisting, fall of chimneys, factory stacks, monuments, towers, elevated tanks.  Frame houses moved on foundations if not bolted down; loose panel walls thrown out.  Decayed piling broken off.  Branches broken from trees.  Changes in flow or temperature of springs and wells.  Cracks in wet ground and on steep slopes.</dd>
-<dt><span class="mercalli">IX</span></dt>
-<dd>General panic.  <a href="#masonry-d">Masonry D</a> destroyed; <a href="#masonry-c">masonry C</a> heavily damaged, sometimes with complete collapse; <a href="#masonry-b">masonry B</a> seriously damaged.  (General damage to foundations)  Frame structures, if not bolted, shifted off foundations.  Frames racked.  Serious damage to reservoirs.  Underground pipes broken.  Conspicuous cracks in ground.  In alluviated areas sand and mud ejected, earthquake fountains, sand craters.</dd>
-<dt><span class="mercalli">X</span></dt>
-<dd>Most masonry and frame structures destroyed with their foundations.  Some well-built wooden structures and bridges destroyed.  Serious damage to dams, dikes, embankments.  Large landslides.  Water thrown on banks of canals, rivers, lakes, etc.  Sand and mud shifted horizontally on beaches and flat land.  Rails bent slightly.</dd>
-<dt><span class="mercalli">XI</span></dt>
-<dd>Rails bent greatly.  Underground pipelines completely out of service.</dd>
-<dt><span class="mercalli">XII</span></dt>
-<dd>Damage nearly total.  Large rock masses displaced.  Lines of sight and level distorted.  Objects thrown into the air.</dd>
+<style>
 
-</dl>
+</style>
+<ol type="I">
+    {% for description in mercalli %}
+        <li>{{ description | safe }}</li>
+    {% endfor %}
+</ol>
 
 <p><em>Masonry descriptions:</em></p>
 <dl class="masonry-list">
